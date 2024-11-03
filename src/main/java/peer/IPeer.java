@@ -1,10 +1,7 @@
 package peer;
 
-import product.Product;
-
 import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.util.Map;
 
 public interface IPeer extends Remote {
     /**
@@ -17,5 +14,11 @@ public interface IPeer extends Remote {
      */
     int getPeerID() throws RemoteException;
 
+    void election(int[] tags) throws RemoteException;
 
+    /**
+     * @param coordinatorID The id of the new coordinator.
+     * @param initiatorID The id of the peer who initiated the election.
+     */
+    void coordinator(int coordinatorID, int initiatorID) throws RemoteException;
 }

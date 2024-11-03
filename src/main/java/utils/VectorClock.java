@@ -1,5 +1,7 @@
 package utils;
 
+import peer.IPeer;
+
 import java.util.Arrays;
 
 public class VectorClock {
