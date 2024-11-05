@@ -1,17 +1,24 @@
 package product;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
 public enum Product {
-    FISH,
-    SALT,
-    BOARS;
+    FISH(2),
+    SALT(1),
+    BOARS(3);
 
-    private static final List<Product> VALUES =
-            Collections.unmodifiableList(Arrays.asList(values()));
+    private final int price;
+
+    Product(int price) {
+        this.price = price;
+    }
+
+    public int getPrice() {
+        return price;
+    }
+
+    private static final List<Product> VALUES = List.of(values());
     private static final int SIZE = VALUES.size();
     private static final Random RANDOM = new Random();
 

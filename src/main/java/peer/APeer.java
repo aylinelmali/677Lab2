@@ -1,35 +1,39 @@
 package peer;
 
+import product.Product;
+import utils.TraderState;
+import utils.VectorClock;
+
 import java.rmi.RemoteException;
 import java.util.Arrays;
 
-public class APeer implements IPeer {
+public abstract class APeer implements IPeer {
 
-    private final int peerID;
-    private IPeer[] peers;
-    private int coordinatorID;
+    protected final int peerID;
+    protected IPeer[] peers;
+    protected int coordinatorID;
+    protected int[] timestamp;
 
     public APeer(int peerID, IPeer[] peers, int coordinatorID) {
         this.peerID = peerID;
         this.peers = peers;
         this.coordinatorID = coordinatorID;
+
+        this.timestamp = new int[peers.length];
+        Arrays.fill(timestamp, 0);
     }
 
     @Override
-    public void start() throws RemoteException {
-
-    }
-
-    @Override
-    public int getPeerID() throws RemoteException {
+    public final int getPeerID() throws RemoteException {
         return peerID;
     }
 
     @Override
-    public void election(int[] tags) throws RemoteException {
+    public final void election(int[] tags) throws RemoteException {
         for (int tag : tags) {
             if (tag == peerID) {
                 int max = Arrays.stream(tags).max().getAsInt();
+                this.coordinatorID = max;
                 peers[(peerID + 1) % peers.length].coordinator(max, peerID);
                 return;
             }
@@ -48,11 +52,53 @@ public class APeer implements IPeer {
     }
 
     @Override
-    public void coordinator(int coordinatorID, int initiatorID) throws RemoteException {
+    public final void coordinator(int coordinatorID, int initiatorID) throws RemoteException {
         this.coordinatorID = coordinatorID;
         if (peerID != initiatorID) {
             peers[(peerID + 1) % peers.length].coordinator(coordinatorID, initiatorID);
         }
+    }
+
+    @Override
+    public final void discover(Product product, int amount, int[] buyerTimestamp, int buyerID) throws RemoteException {
+        if (this.peerID != this.coordinatorID) {
+            throw new RemoteException();
+        }
+
+        var traderState = TraderState.readTraderState();
+        Integer traderAmount = traderState.get(product);
+        boolean available = traderAmount != null && traderAmount >= amount;
+
+        peers[buyerID].discoverAck(product, available, this.timestamp);
+    }
+
+    @Override
+    public final void buy(Product product, int amount, int[] buyerTimestamp, int buyerID) throws RemoteException {
+        if (this.peerID != this.coordinatorID) {
+            throw new RemoteException();
+        }
+        if (VectorClock.isSmallerThan(this.timestamp, buyerTimestamp)) {
+
+            // buy event modifies timestamp.
+            this.timestamp[this.peerID] += 1;
+            VectorClock.mergeRightToLeft(this.timestamp, buyerTimestamp);
+
+            peers[buyerID].buyAck(product, true, this.timestamp);
+        } else { // timestamp of this peer is greater or concurrent.
+            peers[buyerID].buyAck(product, false, this.timestamp);
+        }
+    }
+
+    @Override
+    public final void offer(Product product, int amount, int[] sellerTimestamp, int sellerID) throws RemoteException {
+        if (this.peerID != this.coordinatorID) {
+            throw new RemoteException();
+        }
+        var traderState = TraderState.readTraderState();
+        traderState.compute(product, (k, oldAmount) -> oldAmount == null ? amount : oldAmount + amount);
+        TraderState.writeTraderState(traderState);
+
+        peers[sellerID].offerAck(this.timestamp);
     }
 
     protected int[] getNewTags(int[] tags) {
