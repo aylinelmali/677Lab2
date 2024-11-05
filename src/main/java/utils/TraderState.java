@@ -16,48 +16,89 @@ import java.util.Map;
 
 public class TraderState {
 
-    private Map<Product, Integer> products;
-    private Map<Product, List<Integer>> sellerQueues;
+    private final Map<Product, List<Integer>> sellerQueues;
 
-    private TraderState(Map<Product, Integer> products, Map<Product, List<Integer>> sellerQueues) {
-        this.products = products;
+    private TraderState(Map<Product, List<Integer>> sellerQueues) {
         this.sellerQueues = sellerQueues;
     }
 
     public boolean productAvailable(Product product, int amount) {
-        Integer stock = this.products.get(product);
-        return stock != null && stock >= amount;
+        List<Integer> stock = this.sellerQueues.get(product);
+        return stock != null && stock.size() >= amount;
     }
 
     public List<Integer> takeOutOfStock(Product product, int amount) {
         if (!productAvailable(product, amount)) {
             return List.of();
         }
-        // TODO: Implement this
+
+        List<Integer> queue = sellerQueues.get(product);
+        if (queue == null) {
+            return List.of();
+        }
+
+        List<Integer> first = queue.subList(0, amount);
+        List<Integer> last = queue.subList(amount, queue.size());
+
+        sellerQueues.put(product, last);
+
+        writeTraderState(this);
+
+        return first;
     }
 
-    public Map<Product, Integer> getProducts() {
-        return this.products;
-    }
+    public void putIntoStock(Product product, int amount, int sellerID) {
+        List<Integer> queue = sellerQueues.get(product);
+        if (queue == null) {
+            queue = List.of();
+        }
 
-    public Map<Product, List<Integer>> getSellerQueues() {
-        return this.sellerQueues;
+        for (int i = 0; i < amount; i++) {
+            queue.add(sellerID);
+        }
+        writeTraderState(this);
     }
 
     public static final Path FILE_PATH = Paths.get("trader_state.txt");
 
     public static synchronized void writeTraderState(TraderState traderState) {
         StringBuilder sb = new StringBuilder();
-        for (Product product : traderState.products.keySet()) {
+        for (Product product : traderState.sellerQueues.keySet()) {
             sb
                     .append(product.toString())
-                    .append(":")
-                    .append(traderState.products.get(product))
                     .append(":")
                     .append(listToString(traderState.sellerQueues.get(product)))
                     .append("\n");
         }
         createFile(sb.toString());
+    }
+
+    public static synchronized TraderState readTraderState() {
+        String text = readFile();
+
+        Map<Product, List<Integer>> sellerQueues = new HashMap<>();
+        if (text == null) {
+            for (Product product : Product.values()) {
+                sellerQueues.put(product, new ArrayList<>());
+            }
+        } else {
+            String[] lines = text.split("\n");
+            for (String line : lines) {
+                String[] parts = line.split(":");
+                if (parts.length != 2) {
+                    continue;
+                }
+                Product product = Product.valueOf(parts[0]);
+                String[] sellers = parts[1].split(",");
+                List<Integer> sellerList = new ArrayList<>();
+                for (String seller : sellers) {
+                    sellerList.add(Integer.parseInt(seller));
+                }
+                sellerQueues.put(product, sellerList);
+            }
+        }
+
+        return new TraderState(sellerQueues);
     }
 
     private static String listToString(List<Integer> list) {
@@ -66,38 +107,6 @@ public class TraderState {
             sb.append(j).append(",");
         }
         return sb.toString();
-    }
-
-    public static synchronized TraderState readTraderState() {
-        String text = readFile();
-
-        Map<Product, Integer> products = new HashMap<>();
-        Map<Product, List<Integer>> sellerQueues = new HashMap<>();
-        if (text == null) {
-            for (Product product : Product.values()) {
-                products.put(product, 0);
-                sellerQueues.put(product, new ArrayList<>());
-            }
-        } else {
-            String[] lines = text.split("\n");
-            for (String line : lines) {
-                String[] parts = line.split(":");
-                if (parts.length != 3) {
-                    continue;
-                }
-                Product product = Product.valueOf(parts[0]);
-                int amount = Integer.parseInt(parts[1]);
-                String[] sellers = parts[2].split(",");
-                List<Integer> sellerList = new ArrayList<>();
-                for (String seller : sellers) {
-                    sellerList.add(Integer.parseInt(seller));
-                }
-                products.put(product, amount);
-                sellerQueues.put(product, sellerList);
-            }
-        }
-
-        return new TraderState(products, sellerQueues);
     }
 
     private static void createFile(String content) {
@@ -110,19 +119,19 @@ public class TraderState {
 
     private static String readFile() {
 
-        String text = "";
+        StringBuilder text = new StringBuilder();
 
         try {
             BufferedReader reader = Files.newBufferedReader(TraderState.FILE_PATH, StandardCharsets.UTF_8);
 
             for (String line = reader.readLine(); line != null; line = reader.readLine())
-                text += line + "\n";
+                text.append(line).append("\n");
 
             reader.close();
         } catch (IOException e) {
             return null;
         }
 
-        return text;
+        return text.toString();
     }
 }

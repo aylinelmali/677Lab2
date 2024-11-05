@@ -6,6 +6,7 @@ import utils.VectorClock;
 
 import java.rmi.RemoteException;
 import java.util.Arrays;
+import java.util.List;
 
 public abstract class APeer implements IPeer {
 
@@ -65,9 +66,8 @@ public abstract class APeer implements IPeer {
             throw new RemoteException();
         }
 
-        var traderState = TraderState.readTraderState();
-        Integer traderAmount = traderState.get(product);
-        boolean available = traderAmount != null && traderAmount >= amount;
+        TraderState traderState = TraderState.readTraderState();
+        boolean available = traderState.productAvailable(product, amount);
 
         peers[buyerID].discoverAck(product, available, this.timestamp);
     }
@@ -84,6 +84,12 @@ public abstract class APeer implements IPeer {
             VectorClock.mergeRightToLeft(this.timestamp, buyerTimestamp);
 
             peers[buyerID].buyAck(product, true, this.timestamp);
+
+            TraderState traderState = TraderState.readTraderState();
+            List<Integer> sellers = traderState.takeOutOfStock(product, amount);
+            for (Integer sellerID : sellers) {
+                peers[sellerID].pay(product.getPrice(), this.timestamp);
+            }
         } else { // timestamp of this peer is greater or concurrent.
             peers[buyerID].buyAck(product, false, this.timestamp);
         }
@@ -94,9 +100,10 @@ public abstract class APeer implements IPeer {
         if (this.peerID != this.coordinatorID) {
             throw new RemoteException();
         }
-        var traderState = TraderState.readTraderState();
-        traderState.compute(product, (k, oldAmount) -> oldAmount == null ? amount : oldAmount + amount);
-        TraderState.writeTraderState(traderState);
+
+
+        TraderState traderState = TraderState.readTraderState();
+        traderState.putIntoStock(product, amount, sellerID);
 
         peers[sellerID].offerAck(this.timestamp);
     }

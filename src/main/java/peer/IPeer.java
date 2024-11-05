@@ -84,7 +84,7 @@ public interface IPeer extends Remote {
 
     /**
      * Pays the seller.
-     * @param price Amount of money payed.
+     * @param price Amount of money paid.
      * @param traderTimestamp Timestamp of the trader.
      */
     void pay(int price, int[] traderTimestamp) throws RemoteException;
