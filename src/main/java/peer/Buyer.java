@@ -48,7 +48,7 @@ public class Buyer extends APeer{
     }
 
     /**
-     * Picks a random new product and forwards a lookup message to each peer.
+     * Picks a random new product.
      */
     private void buyNewProduct() throws RemoteException {
         product = Product.pickRandomProduct();
