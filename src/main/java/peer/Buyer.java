@@ -25,6 +25,22 @@ public class Buyer extends APeer{
 
     @Override
     public void start() throws RemoteException {
+        ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+
+        int initialDelay = new Random().nextInt(1,11);
+        int period = new Random().nextInt(7,11);
+
+        executor.scheduleAtFixedRate(() -> {
+            // only buy something if not coordinator
+            if (this.peerID == this.coordinatorID) {
+                return;
+            }
+            try {
+                this.peers[this.coordinatorID].buy(product, amount, this.timestamp, this.peerID);
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
+            }
+        }, initialDelay, period, TimeUnit.SECONDS);
         Logger.log("Peer " + peerID + " (Buyer)");
         super.start();
     }
