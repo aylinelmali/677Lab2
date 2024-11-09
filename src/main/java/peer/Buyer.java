@@ -36,7 +36,7 @@ public class Buyer extends APeer{
         }
         else{
             buyNewProduct();
-            
+            discover(product, amount, this.timestamp, peerID);
         }
     }
 
