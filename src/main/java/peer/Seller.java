@@ -9,8 +9,8 @@ public class Seller extends APeer {
 
     int money;
 
-    public Seller(int peerID, IPeer[] peers, int coordinatorID) {
-        super(peerID, peers, coordinatorID);
+    public Seller(int peerID, int peersAmt, int coordinatorID) {
+        super(peerID, peersAmt, coordinatorID);
         money = 0;
     }
 
@@ -31,12 +31,12 @@ public class Seller extends APeer {
 
     @Override
     public void offerAck(int[] traderTimestamp) throws RemoteException {
-        VectorClock.mergeRightToLeft(this.timestamp, traderTimestamp);
+        this.timestamp = VectorClock.merge(this.timestamp, traderTimestamp);
     }
 
     @Override
     public void pay(int price, int[] traderTimestamp) throws RemoteException {
         money += price;
-        VectorClock.mergeRightToLeft(this.timestamp, traderTimestamp);
+        this.timestamp = VectorClock.merge(this.timestamp, traderTimestamp);
     }
 }

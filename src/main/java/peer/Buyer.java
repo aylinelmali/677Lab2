@@ -16,8 +16,8 @@ public class Buyer extends APeer{
     private Product product;
     private int amount;
 
-    public Buyer(int peerID, IPeer[] peers, int coordinatorID) throws RemoteException {
-        super(peerID, peers, coordinatorID);
+    public Buyer(int peerID, int peersAmt, int coordinatorID) throws RemoteException {
+        super(peerID, peersAmt, coordinatorID);
         product = Product.pickRandomProduct();
         amount = (int) (Math.random() * 5) + 1;
     }

@@ -16,6 +16,11 @@ public interface IPeer extends Remote {
      */
     int getPeerID() throws RemoteException;
 
+    /**
+     * @param peers All the peers in the network
+     */
+    void setPeers(IPeer[] peers) throws RemoteException;
+
     // Coordination
 
     /**

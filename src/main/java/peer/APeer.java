@@ -10,23 +10,27 @@ import java.util.List;
 
 public abstract class APeer implements IPeer {
 
-    protected final int peerID;
-    protected IPeer[] peers;
-    protected int coordinatorID;
-    protected int[] timestamp;
+    public final int peerID;
+    public IPeer[] peers;
+    public int coordinatorID;
+    public int[] timestamp;
 
-    public APeer(int peerID, IPeer[] peers, int coordinatorID) {
+    public APeer(int peerID, int peersAmt, int coordinatorID) {
         this.peerID = peerID;
-        this.peers = peers;
         this.coordinatorID = coordinatorID;
 
-        this.timestamp = new int[peers.length];
+        this.timestamp = new int[peersAmt];
         Arrays.fill(timestamp, 0);
     }
 
     @Override
     public final int getPeerID() throws RemoteException {
         return peerID;
+    }
+
+    @Override
+    public final void setPeers(IPeer[] peers) {
+        this.peers = peers;
     }
 
     @Override
@@ -46,7 +50,7 @@ public abstract class APeer implements IPeer {
             try {
                 peers[nextPeer].election(newTags);
                 break;
-            } catch (RemoteException e) {
+            } catch (Exception e) {
                 // TODO: Do logging
             }
         }
@@ -81,12 +85,13 @@ public abstract class APeer implements IPeer {
 
             // buy event modifies timestamp.
             this.timestamp[this.peerID] += 1;
-            VectorClock.mergeRightToLeft(this.timestamp, buyerTimestamp);
+            this.timestamp = VectorClock.merge(this.timestamp, buyerTimestamp);
 
             peers[buyerID].buyAck(product, true, this.timestamp);
 
             TraderState traderState = TraderState.readTraderState();
             List<Integer> sellers = traderState.takeOutOfStock(product, amount);
+            TraderState.writeTraderState(traderState);
             for (Integer sellerID : sellers) {
                 peers[sellerID].pay(product.getPrice(), this.timestamp);
             }
@@ -104,6 +109,7 @@ public abstract class APeer implements IPeer {
 
         TraderState traderState = TraderState.readTraderState();
         traderState.putIntoStock(product, amount, sellerID);
+        TraderState.writeTraderState(traderState);
 
         peers[sellerID].offerAck(this.timestamp);
     }

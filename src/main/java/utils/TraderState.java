@@ -42,22 +42,18 @@ public class TraderState {
 
         sellerQueues.put(product, last);
 
-        writeTraderState(this);
-
         return first;
     }
 
     public void putIntoStock(Product product, int amount, int sellerID) {
-        List<Integer> queue = sellerQueues.get(product);
-        if (queue == null) {
-            queue = List.of();
-        }
+        List<Integer> queue = sellerQueues.computeIfAbsent(product, k -> new ArrayList<>());
 
         for (int i = 0; i < amount; i++) {
             queue.add(sellerID);
         }
-        writeTraderState(this);
     }
+
+    // static stuff
 
     public static final Path FILE_PATH = Paths.get("trader_state.txt");
 

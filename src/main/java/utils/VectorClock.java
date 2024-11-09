@@ -27,14 +27,16 @@ public class VectorClock {
     }
 
     /**
-     * Merges second timestamp to fist timestamp.
+     * Merges second timestamp with fist timestamp.
      * @param vc1 First vector clock timestamp.
      * @param vc2 Second vector clock timestamp.
      */
-    public static void mergeRightToLeft(int[] vc1, int[] vc2) {
+    public static int[] merge(int[] vc1, int[] vc2) {
+        int[] merged = new int[vc1.length];
         for (int i = 0; i < vc1.length; i++) {
-            vc1[i] = Math.max(vc1[i], vc2[i]);
+            merged[i] = Math.max(vc1[i], vc2[i]);
         }
+        return merged;
     }
 }
 
