@@ -7,6 +7,10 @@ import utils.VectorClock;
 import java.rmi.RemoteException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public abstract class APeer implements IPeer {
 
@@ -15,12 +19,45 @@ public abstract class APeer implements IPeer {
     public int coordinatorID;
     public int[] timestamp;
 
+    // crash functionality
+    public boolean crashIfCoordinator;
+    public boolean crashed;
+
     public APeer(int peerID, int peersAmt, int coordinatorID) {
         this.peerID = peerID;
         this.coordinatorID = coordinatorID;
 
         this.timestamp = new int[peersAmt];
         Arrays.fill(timestamp, 0);
+
+        crashIfCoordinator = true;
+        crashed = false;
+    }
+
+    @Override
+    public void start() throws RemoteException {
+        if (!crashIfCoordinator) {
+            return;
+        }
+
+        ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+
+        int initialDelay = new Random().nextInt(1,10);
+        int period = new Random().nextInt(8,10);
+
+        executor.scheduleAtFixedRate(() -> {
+            try {
+                boolean before = crashed;
+                crashed = !crashed && (this.peerID == this.coordinatorID);
+
+                // call election after crash
+                if (before) {
+                    this.election(new int[] {});
+                }
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
+            }
+        }, initialDelay, period, TimeUnit.SECONDS);
     }
 
     @Override
@@ -35,6 +72,10 @@ public abstract class APeer implements IPeer {
 
     @Override
     public final void election(int[] tags) throws RemoteException {
+        // simulate crash
+        simulateCrash();
+
+        // method
         for (int tag : tags) {
             if (tag == peerID) {
                 int max = Arrays.stream(tags).max().getAsInt();
@@ -58,6 +99,10 @@ public abstract class APeer implements IPeer {
 
     @Override
     public final void coordinator(int coordinatorID, int initiatorID) throws RemoteException {
+        // simulate crash
+        simulateCrash();
+
+        // method
         this.coordinatorID = coordinatorID;
         if (peerID != initiatorID) {
             peers[(peerID + 1) % peers.length].coordinator(coordinatorID, initiatorID);
@@ -66,6 +111,10 @@ public abstract class APeer implements IPeer {
 
     @Override
     public final void discover(Product product, int amount, int[] buyerTimestamp, int buyerID) throws RemoteException {
+        // simulate crash
+        simulateCrash();
+
+        // method
         if (this.peerID != this.coordinatorID) {
             throw new RemoteException();
         }
@@ -78,6 +127,10 @@ public abstract class APeer implements IPeer {
 
     @Override
     public final void buy(Product product, int amount, int[] buyerTimestamp, int buyerID) throws RemoteException {
+        // simulate crash
+        simulateCrash();
+
+        // method
         if (this.peerID != this.coordinatorID) {
             throw new RemoteException();
         }
@@ -102,6 +155,10 @@ public abstract class APeer implements IPeer {
 
     @Override
     public final void offer(Product product, int amount, int[] sellerTimestamp, int sellerID) throws RemoteException {
+        // simulate crash
+        simulateCrash();
+
+        // method
         if (this.peerID != this.coordinatorID) {
             throw new RemoteException();
         }
@@ -112,6 +169,12 @@ public abstract class APeer implements IPeer {
         TraderState.writeTraderState(traderState);
 
         peers[sellerID].offerAck(this.timestamp);
+    }
+
+    private void simulateCrash() throws RemoteException {
+        if (crashed) {
+            throw new RemoteException();
+        }
     }
 
     protected int[] getNewTags(int[] tags) {

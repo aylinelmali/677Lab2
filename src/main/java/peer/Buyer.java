@@ -26,6 +26,7 @@ public class Buyer extends APeer{
     @Override
     public void start() throws RemoteException {
         Logger.log("Peer " + peerID + " (Buyer)");
+        super.start();
     }
 
     @Override
