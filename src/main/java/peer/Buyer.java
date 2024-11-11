@@ -6,25 +6,24 @@ import utils.Messages;
 import utils.VectorClock;
 
 import java.rmi.RemoteException;
-import java.rmi.registry.Registry;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class Buyer extends APeer{
+public class Buyer extends APeer {
 
     private Product product;
     private int amount;
 
-    public Buyer(int peerID, int peersAmt, int coordinatorID) throws RemoteException {
+    public Buyer(int peerID, int peersAmt, int coordinatorID) {
         super(peerID, peersAmt, coordinatorID);
-        product = Product.pickRandomProduct();
-        amount = (int) (Math.random() * 5) + 1;
+        pickRandomProduct();
     }
 
     @Override
     public void start() throws RemoteException {
+        Logger.log("Peer " + peerID + " (Buyer)");
         ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
 
         int initialDelay = new Random().nextInt(1,11);
@@ -36,32 +35,33 @@ public class Buyer extends APeer{
                 return;
             }
             try {
-                this.peers[this.coordinatorID].buy(product, amount, this.timestamp, this.peerID);
+                initiateDiscovery();
             } catch (RemoteException e) {
                 throw new RuntimeException(e);
             }
         }, initialDelay, period, TimeUnit.SECONDS);
-        Logger.log("Peer " + peerID + " (Buyer)");
         super.start();
     }
 
     @Override
     public void discoverAck(Product product, boolean available, int[] traderTimestamp) throws RemoteException {
+        // check if ack is valid
+        this.timestamp[this.peerID] += 1;
         this.timestamp = VectorClock.merge(this.timestamp, traderTimestamp);
-        if(available){
-            initiateBuy(product, amount);
-        }
-        else{
-            buyNewProduct();
-            discover(product, amount, this.timestamp, peerID);
+        if (this.product == product && available) {
+            initiateBuy();
+        } else {
+            pickRandomProduct();
         }
     }
 
     @Override
     public void buyAck(Product product, boolean bought, int[] traderTimestamp) throws RemoteException {
+        // check if ack is valid
+        this.timestamp[this.peerID] += 1;
         this.timestamp = VectorClock.merge(this.timestamp, traderTimestamp);
-        if (bought){
-            buyNewProduct();
+        if (this.product == product && bought) {
+            pickRandomProduct();
         }
     }
 
@@ -75,16 +75,28 @@ public class Buyer extends APeer{
         // Do nothing. This peer is not a Seller
     }
 
-    public void initiateBuy(Product product, int amount) throws RemoteException {
-        this.timestamp[peerID]++;
-        peers[coordinatorID].buy(product, amount, this.timestamp, peerID);
+    public void initiateDiscovery() throws RemoteException {
+        Logger.log(Messages.getDiscoveryMessage(peerID, amount, product));
+        this.timestamp[this.peerID] += 1;
+        this.peers[this.coordinatorID].discover(this.product, this.amount, this.timestamp, this.peerID);
+    }
+
+    public void initiateBuy() throws RemoteException {
+        Logger.log(Messages.getBuyMessage(peerID, amount, product));
+        this.timestamp[this.peerID] += 1;
+        peers[coordinatorID].buy(this.product, this.amount, this.timestamp, this.peerID);
     }
 
     /**
      * Picks a random new product.
      */
-    private void buyNewProduct() throws RemoteException {
-        product = Product.pickRandomProduct();
-        amount = (int) (Math.random() * 5) + 1;
+    public void pickRandomProduct() {
+        this.product = Product.pickRandomProduct();
+        this.amount = (int) (Math.random() * 5) + 1;
+    }
+
+    public void pickProduct(Product product, int amount) {
+        this.product = product;
+        this.amount = amount;
     }
 }

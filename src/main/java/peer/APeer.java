@@ -1,16 +1,14 @@
 package peer;
 
 import product.Product;
+import utils.Logger;
+import utils.Messages;
 import utils.TraderState;
 import utils.VectorClock;
 
 import java.rmi.RemoteException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 public abstract class APeer implements IPeer {
 
@@ -36,28 +34,7 @@ public abstract class APeer implements IPeer {
 
     @Override
     public void start() throws RemoteException {
-        if (!crashIfCoordinator) {
-            return;
-        }
-
-        ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
-
-        int initialDelay = new Random().nextInt(1,10);
-        int period = new Random().nextInt(8,10);
-
-        executor.scheduleAtFixedRate(() -> {
-            try {
-                boolean before = crashed;
-                crashed = !crashed && (this.peerID == this.coordinatorID);
-
-                // call election after crash
-                if (before) {
-                    this.election(new int[] {});
-                }
-            } catch (RemoteException e) {
-                throw new RuntimeException(e);
-            }
-        }, initialDelay, period, TimeUnit.SECONDS);
+        // TODO: Crash behavior
     }
 
     @Override
@@ -80,19 +57,21 @@ public abstract class APeer implements IPeer {
             if (tag == peerID) {
                 int max = Arrays.stream(tags).max().getAsInt();
                 this.coordinatorID = max;
+                Logger.log(Messages.getElectionDoneMessage(max));
                 peers[(peerID + 1) % peers.length].coordinator(max, peerID);
                 return;
             }
         }
 
+        int[] newTags = getNewTags(tags);
+        Logger.log(Messages.getPeerDoingElectionMessage(peerID, newTags));
         for (int i = 1; i <= peers.length; i++) {
             int nextPeer = (i + peerID) % peers.length;
-            int[] newTags = getNewTags(tags);
             try {
                 peers[nextPeer].election(newTags);
                 break;
             } catch (Exception e) {
-                // TODO: Do logging
+                Logger.log(Messages.getPeerDoesNotRespondMessage(nextPeer));
             }
         }
     }
@@ -103,6 +82,7 @@ public abstract class APeer implements IPeer {
         simulateCrash();
 
         // method
+        Logger.log(Messages.getPeerUpdatesCoordinatorMessage(this.peerID, coordinatorID));
         this.coordinatorID = coordinatorID;
         if (peerID != initiatorID) {
             peers[(peerID + 1) % peers.length].coordinator(coordinatorID, initiatorID);
@@ -110,7 +90,7 @@ public abstract class APeer implements IPeer {
     }
 
     @Override
-    public final void discover(Product product, int amount, int[] buyerTimestamp, int buyerID) throws RemoteException {
+    public final synchronized void discover(Product product, int amount, int[] buyerTimestamp, int buyerID) throws RemoteException {
         // simulate crash
         simulateCrash();
 
@@ -121,12 +101,20 @@ public abstract class APeer implements IPeer {
 
         TraderState traderState = TraderState.readTraderState();
         boolean available = traderState.productAvailable(product, amount);
+        if (available) {
+            Logger.log(Messages.getProductAvailableMessage(amount, product, buyerID));
+        } else {
+            Logger.log(Messages.getProductUnavailableMessage(amount, product, buyerID));
+        }
+
+        this.timestamp[this.peerID] += 1;
+        this.timestamp = VectorClock.merge(this.timestamp, buyerTimestamp);
 
         peers[buyerID].discoverAck(product, available, this.timestamp);
     }
 
     @Override
-    public final void buy(Product product, int amount, int[] buyerTimestamp, int buyerID) throws RemoteException {
+    public final synchronized void buy(Product product, int amount, int[] buyerTimestamp, int buyerID) throws RemoteException {
         // simulate crash
         simulateCrash();
 
@@ -134,27 +122,27 @@ public abstract class APeer implements IPeer {
         if (this.peerID != this.coordinatorID) {
             throw new RemoteException();
         }
-        if (VectorClock.isSmallerThan(this.timestamp, buyerTimestamp)) {
-
-            // buy event modifies timestamp.
+        TraderState traderState = TraderState.readTraderState();
+        if (VectorClock.isSmallerThan(this.timestamp, buyerTimestamp) && traderState.productAvailable(product, amount)) {
             this.timestamp[this.peerID] += 1;
             this.timestamp = VectorClock.merge(this.timestamp, buyerTimestamp);
 
             peers[buyerID].buyAck(product, true, this.timestamp);
 
-            TraderState traderState = TraderState.readTraderState();
             List<Integer> sellers = traderState.takeOutOfStock(product, amount);
             TraderState.writeTraderState(traderState);
+            Logger.log(Messages.getBoughtMessage(amount, product, this.peerID, buyerID));
             for (Integer sellerID : sellers) {
                 peers[sellerID].pay(product.getPrice(), this.timestamp);
             }
         } else { // timestamp of this peer is greater or concurrent.
+            Logger.log(Messages.getBuyFailedMessage(buyerID, this.peerID));
             peers[buyerID].buyAck(product, false, this.timestamp);
         }
     }
 
     @Override
-    public final void offer(Product product, int amount, int[] sellerTimestamp, int sellerID) throws RemoteException {
+    public final synchronized void offer(Product product, int amount, int[] sellerTimestamp, int sellerID) throws RemoteException {
         // simulate crash
         simulateCrash();
 
@@ -163,11 +151,13 @@ public abstract class APeer implements IPeer {
             throw new RemoteException();
         }
 
-
         TraderState traderState = TraderState.readTraderState();
         traderState.putIntoStock(product, amount, sellerID);
         TraderState.writeTraderState(traderState);
+        Logger.log(Messages.getAddedToStockMessage(amount, product, sellerID, this.peerID));
 
+        this.timestamp[this.peerID] += 1;
+        this.timestamp = VectorClock.merge(this.timestamp, sellerTimestamp);
         peers[sellerID].offerAck(this.timestamp);
     }
 

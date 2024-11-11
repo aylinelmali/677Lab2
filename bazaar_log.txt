@@ -1,0 +1,250 @@
+11.11.2024 11:23:13.412 Seller 0 offers 5 piece(s) of BOARS.
+11.11.2024 11:23:13.421 5 piece(s) of BOARS offered from 0 added to stock by coordinator 1.
+11.11.2024 11:23:13.421 Seller 0 offers 3 piece(s) of FISH.
+11.11.2024 11:23:13.422 3 piece(s) of FISH offered from 0 added to stock by coordinator 1.
+11.11.2024 11:24:03.917 Seller 0 offers 5 piece(s) of BOARS.
+11.11.2024 11:24:03.922 5 piece(s) of BOARS offered from 0 added to stock by coordinator 1.
+11.11.2024 11:24:03.922 Seller 0 offers 3 piece(s) of FISH.
+11.11.2024 11:24:03.923 3 piece(s) of FISH offered from 0 added to stock by coordinator 1.
+11.11.2024 11:31:11.950 Seller 0 offers 5 piece(s) of BOARS.
+11.11.2024 11:31:11.955 5 piece(s) of BOARS offered from 0 added to stock by coordinator 1.
+11.11.2024 11:31:11.955 Seller 0 offers 3 piece(s) of FISH.
+11.11.2024 11:31:11.956 3 piece(s) of FISH offered from 0 added to stock by coordinator 1.
+11.11.2024 11:31:51.625 Seller 0 offers 5 piece(s) of BOARS.
+11.11.2024 11:31:51.630 5 piece(s) of BOARS offered from 0 added to stock by coordinator 1.
+11.11.2024 11:31:51.630 Seller 0 offers 3 piece(s) of FISH.
+11.11.2024 11:31:51.631 3 piece(s) of FISH offered from 0 added to stock by coordinator 1.
+11.11.2024 11:31:56.518 Seller 0 offers 5 piece(s) of BOARS.
+11.11.2024 11:31:56.523 5 piece(s) of BOARS offered from 0 added to stock by coordinator 1.
+11.11.2024 11:31:56.523 Seller 0 offers 3 piece(s) of FISH.
+11.11.2024 11:31:56.524 3 piece(s) of FISH offered from 0 added to stock by coordinator 1.
+11.11.2024 11:32:33.310 Seller 0 offers 5 piece(s) of BOARS.
+11.11.2024 11:32:33.314 5 piece(s) of BOARS offered from 0 added to stock by coordinator 1.
+11.11.2024 11:36:05.187 Seller 0 offers 5 piece(s) of BOARS.
+11.11.2024 11:36:05.192 5 piece(s) of BOARS offered from 0 added to stock by coordinator 1.
+11.11.2024 11:36:05.193 Seller 0 offers 3 piece(s) of FISH.
+11.11.2024 11:36:05.194 3 piece(s) of FISH offered from 0 added to stock by coordinator 1.
+11.11.2024 11:36:39.264 Seller 0 offers 5 piece(s) of BOARS.
+11.11.2024 11:36:39.269 5 piece(s) of BOARS offered from 0 added to stock by coordinator 1.
+11.11.2024 11:36:39.270 Seller 0 offers 3 piece(s) of FISH.
+11.11.2024 11:36:39.271 3 piece(s) of FISH offered from 0 added to stock by coordinator 1.
+11.11.2024 12:05:59.945 Seller 1 offers 5 piece(s) of BOARS.
+11.11.2024 12:05:59.950 5 piece(s) of BOARS offered from 1 added to stock by coordinator 2.
+11.11.2024 12:05:59.950 Peer 0 is looking for 5 piece(s) of BOARS.
+11.11.2024 12:05:59.952 5 piece(s) of BOARS is available for 0.
+11.11.2024 12:05:59.952 Peer 0 is buying 5 piece(s) of BOARS.
+11.11.2024 12:05:59.952 5 piece(s) of BOARS bought from coordinator 2 by peer 0.
+11.11.2024 12:05:59.953 Seller 1 received 3 money.
+11.11.2024 12:05:59.953 Seller 1 received 3 money.
+11.11.2024 12:05:59.953 Seller 1 received 3 money.
+11.11.2024 12:05:59.954 Seller 1 received 3 money.
+11.11.2024 12:05:59.954 Seller 1 received 3 money.
+11.11.2024 12:06:18.485 Seller 1 offers 5 piece(s) of BOARS.
+11.11.2024 12:06:18.489 5 piece(s) of BOARS offered from 1 added to stock by coordinator 2.
+11.11.2024 12:06:18.489 Peer 0 is looking for 5 piece(s) of BOARS.
+11.11.2024 12:06:18.491 5 piece(s) of BOARS is available for 0.
+11.11.2024 12:06:18.491 Peer 0 is buying 5 piece(s) of BOARS.
+11.11.2024 12:06:18.492 5 piece(s) of BOARS bought from coordinator 2 by peer 0.
+11.11.2024 12:06:18.492 Seller 1 received 3 money.
+11.11.2024 12:06:18.492 Seller 1 received 3 money.
+11.11.2024 12:06:18.493 Seller 1 received 3 money.
+11.11.2024 12:06:18.493 Seller 1 received 3 money.
+11.11.2024 12:06:18.493 Seller 1 received 3 money.
+11.11.2024 12:06:42.107 Seller 1 offers 5 piece(s) of BOARS.
+11.11.2024 12:06:42.112 5 piece(s) of BOARS offered from 1 added to stock by coordinator 2.
+11.11.2024 12:06:42.112 Peer 0 is looking for 3 piece(s) of BOARS.
+11.11.2024 12:06:42.113 3 piece(s) of BOARS is available for 0.
+11.11.2024 12:06:42.114 Peer 0 is buying 3 piece(s) of BOARS.
+11.11.2024 12:06:42.114 3 piece(s) of BOARS bought from coordinator 2 by peer 0.
+11.11.2024 12:06:42.115 Seller 1 received 3 money.
+11.11.2024 12:06:42.115 Seller 1 received 3 money.
+11.11.2024 12:06:42.115 Seller 1 received 3 money.
+11.11.2024 12:07:34.672 Seller 1 offers 5 piece(s) of BOARS.
+11.11.2024 12:07:34.677 5 piece(s) of BOARS offered from 1 added to stock by coordinator 2.
+11.11.2024 12:07:34.677 Peer 0 is looking for 3 piece(s) of BOARS.
+11.11.2024 12:07:34.679 3 piece(s) of BOARS is available for 0.
+11.11.2024 12:07:34.679 Peer 0 is buying 3 piece(s) of BOARS.
+11.11.2024 12:07:34.680 3 piece(s) of BOARS bought from coordinator 2 by peer 0.
+11.11.2024 12:07:34.680 Seller 1 received 3 money.
+11.11.2024 12:07:34.680 Seller 1 received 3 money.
+11.11.2024 12:07:34.681 Seller 1 received 3 money.
+11.11.2024 12:09:05.932 Seller 1 offers 5 piece(s) of BOARS.
+11.11.2024 12:09:05.937 5 piece(s) of BOARS offered from 1 added to stock by coordinator 2.
+11.11.2024 12:09:05.938 Peer 0 is looking for 3 piece(s) of BOARS.
+11.11.2024 12:09:05.939 3 piece(s) of BOARS is available for 0.
+11.11.2024 12:09:05.939 Peer 0 is buying 3 piece(s) of BOARS.
+11.11.2024 12:09:05.940 3 piece(s) of BOARS bought from coordinator 2 by peer 0.
+11.11.2024 12:09:05.941 Seller 1 received 3 money.
+11.11.2024 12:09:05.941 Seller 1 received 3 money.
+11.11.2024 12:09:05.941 Seller 1 received 3 money.
+11.11.2024 12:15:26.909 Seller 1 offers 5 piece(s) of BOARS.
+11.11.2024 12:15:26.914 5 piece(s) of BOARS offered from 1 added to stock by coordinator 2.
+11.11.2024 12:15:26.915 Peer 0 is looking for 3 piece(s) of BOARS.
+11.11.2024 12:15:26.917 3 piece(s) of BOARS is available for 0.
+11.11.2024 12:15:26.917 Peer 0 is buying 3 piece(s) of BOARS.
+11.11.2024 12:15:26.918 3 piece(s) of BOARS bought from coordinator 2 by peer 0.
+11.11.2024 12:15:26.919 Seller 1 received 3 money.
+11.11.2024 12:15:26.919 Seller 1 received 3 money.
+11.11.2024 12:15:26.920 Seller 1 received 3 money.
+11.11.2024 12:16:14.137 Seller 1 offers 5 piece(s) of BOARS.
+11.11.2024 12:16:14.141 5 piece(s) of BOARS offered from 1 added to stock by coordinator 2.
+11.11.2024 12:16:14.143 Peer 0 is looking for 3 piece(s) of BOARS.
+11.11.2024 12:16:14.144 3 piece(s) of BOARS is available for 0.
+11.11.2024 12:16:14.144 Peer 0 is buying 3 piece(s) of BOARS.
+11.11.2024 12:16:14.145 3 piece(s) of BOARS bought from coordinator 2 by peer 0.
+11.11.2024 12:16:14.145 Seller 1 received 3 money.
+11.11.2024 12:16:14.146 Seller 1 received 3 money.
+11.11.2024 12:16:14.146 Seller 1 received 3 money.
+11.11.2024 12:17:00.228 Seller 1 offers 5 piece(s) of BOARS.
+11.11.2024 12:17:00.233 5 piece(s) of BOARS offered from 1 added to stock by coordinator 2.
+11.11.2024 12:17:00.234 Peer 0 is looking for 3 piece(s) of BOARS.
+11.11.2024 12:17:00.236 3 piece(s) of BOARS is available for 0.
+11.11.2024 12:17:00.236 Peer 0 is buying 3 piece(s) of BOARS.
+11.11.2024 12:17:00.236 3 piece(s) of BOARS bought from coordinator 2 by peer 0.
+11.11.2024 12:17:00.237 Seller 1 received 3 money.
+11.11.2024 12:17:00.237 Seller 1 received 3 money.
+11.11.2024 12:17:00.237 Seller 1 received 3 money.
+11.11.2024 12:17:06.729 Seller 1 offers 5 piece(s) of BOARS.
+11.11.2024 12:17:06.733 5 piece(s) of BOARS offered from 1 added to stock by coordinator 2.
+11.11.2024 12:17:06.734 Peer 0 is looking for 3 piece(s) of BOARS.
+11.11.2024 12:17:06.736 3 piece(s) of BOARS is available for 0.
+11.11.2024 12:17:06.736 Peer 0 is buying 3 piece(s) of BOARS.
+11.11.2024 12:17:06.737 3 piece(s) of BOARS bought from coordinator 2 by peer 0.
+11.11.2024 12:17:06.737 Seller 1 received 3 money.
+11.11.2024 12:17:06.737 Seller 1 received 3 money.
+11.11.2024 12:17:06.738 Seller 1 received 3 money.
+11.11.2024 12:17:14.091 Seller 1 offers 5 piece(s) of BOARS.
+11.11.2024 12:17:14.096 5 piece(s) of BOARS offered from 1 added to stock by coordinator 2.
+11.11.2024 12:17:14.098 Peer 0 is looking for 3 piece(s) of BOARS.
+11.11.2024 12:17:14.099 3 piece(s) of BOARS is available for 0.
+11.11.2024 12:17:14.099 Peer 0 is buying 3 piece(s) of BOARS.
+11.11.2024 12:17:14.100 3 piece(s) of BOARS bought from coordinator 2 by peer 0.
+11.11.2024 12:17:14.100 Seller 1 received 3 money.
+11.11.2024 12:17:14.100 Seller 1 received 3 money.
+11.11.2024 12:17:14.101 Seller 1 received 3 money.
+11.11.2024 12:22:09.535 Seller 1 offers 5 piece(s) of BOARS.
+11.11.2024 12:22:09.540 5 piece(s) of BOARS offered from 1 added to stock by coordinator 2.
+11.11.2024 12:22:09.542 Peer 0 is buying 3 piece(s) of BOARS.
+11.11.2024 12:22:09.542 Peer 0 couldn't buy product from coordinator 2. Timestamp is invalid.
+11.11.2024 12:25:24.399 Seller 1 offers 5 piece(s) of BOARS.
+11.11.2024 12:25:24.404 5 piece(s) of BOARS offered from 1 added to stock by coordinator 2.
+11.11.2024 12:25:24.406 Peer 0 is buying 3 piece(s) of BOARS.
+11.11.2024 12:25:24.406 Peer 0 couldn't buy product from coordinator 2. Timestamp is invalid.
+11.11.2024 12:25:38.247 Seller 1 offers 5 piece(s) of BOARS.
+11.11.2024 12:25:38.255 5 piece(s) of BOARS offered from 1 added to stock by coordinator 2.
+11.11.2024 12:25:38.257 Peer 0 is buying 3 piece(s) of BOARS.
+11.11.2024 12:25:38.258 Peer 0 couldn't buy product from coordinator 2. Timestamp is invalid.
+11.11.2024 12:29:44.693 Seller 1 offers 5 piece(s) of BOARS.
+11.11.2024 12:29:44.698 5 piece(s) of BOARS offered from 1 added to stock by coordinator 2.
+11.11.2024 12:29:44.699 Peer 0 is buying 3 piece(s) of BOARS.
+11.11.2024 12:29:44.700 Peer 0 couldn't buy product from coordinator 2. Timestamp is invalid.
+11.11.2024 12:30:03.426 Seller 1 offers 5 piece(s) of BOARS.
+11.11.2024 12:30:03.432 5 piece(s) of BOARS offered from 1 added to stock by coordinator 2.
+11.11.2024 12:30:03.433 Peer 0 is buying 3 piece(s) of BOARS.
+11.11.2024 12:30:03.434 Peer 0 couldn't buy product from coordinator 2. Timestamp is invalid.
+11.11.2024 12:30:46.834 Seller 1 offers 5 piece(s) of BOARS.
+11.11.2024 12:30:46.840 5 piece(s) of BOARS offered from 1 added to stock by coordinator 2.
+11.11.2024 12:30:46.841 Peer 0 is buying 3 piece(s) of BOARS.
+11.11.2024 12:30:46.842 Peer 0 couldn't buy product from coordinator 2. Timestamp is invalid.
+11.11.2024 12:31:03.067 Seller 1 offers 5 piece(s) of BOARS.
+11.11.2024 12:31:03.072 5 piece(s) of BOARS offered from 1 added to stock by coordinator 2.
+11.11.2024 12:31:03.074 Peer 0 is buying 3 piece(s) of BOARS.
+11.11.2024 12:31:03.075 Peer 0 couldn't buy product from coordinator 2. Timestamp is invalid.
+11.11.2024 12:33:56.620 Seller 1 offers 5 piece(s) of BOARS.
+11.11.2024 12:33:56.624 5 piece(s) of BOARS offered from 1 added to stock by coordinator 2.
+11.11.2024 12:33:56.626 Peer 0 is buying 6 piece(s) of BOARS.
+11.11.2024 12:33:56.626 Peer 0 couldn't buy product from coordinator 2. Timestamp is invalid.
+11.11.2024 12:38:36.109 Seller 1 offers 5 piece(s) of BOARS.
+11.11.2024 12:38:36.114 5 piece(s) of BOARS offered from 1 added to stock by coordinator 2.
+11.11.2024 12:38:36.115 Peer 0 is looking for 6 piece(s) of BOARS.
+11.11.2024 12:38:36.117 6 piece(s) of BOARS is not available for 0.
+11.11.2024 12:39:12.475 Seller 1 offers 5 piece(s) of BOARS.
+11.11.2024 12:39:12.480 5 piece(s) of BOARS offered from 1 added to stock by coordinator 2.
+11.11.2024 12:39:12.481 Peer 0 is looking for 6 piece(s) of BOARS.
+11.11.2024 12:39:12.483 6 piece(s) of BOARS is not available for 0.
+11.11.2024 12:39:43.765 Seller 1 offers 5 piece(s) of BOARS.
+11.11.2024 12:39:43.770 5 piece(s) of BOARS offered from 1 added to stock by coordinator 2.
+11.11.2024 12:39:43.771 Peer 0 is looking for 6 piece(s) of BOARS.
+11.11.2024 12:39:43.773 6 piece(s) of BOARS is not available for 0.
+11.11.2024 12:40:00.656 Seller 1 offers 5 piece(s) of BOARS.
+11.11.2024 12:40:00.661 5 piece(s) of BOARS offered from 1 added to stock by coordinator 2.
+11.11.2024 12:40:00.662 Peer 0 is looking for 6 piece(s) of BOARS.
+11.11.2024 12:40:00.664 6 piece(s) of BOARS is not available for 0.
+11.11.2024 12:40:37.658 Seller 1 offers 5 piece(s) of BOARS.
+11.11.2024 12:40:37.663 5 piece(s) of BOARS offered from 1 added to stock by coordinator 2.
+11.11.2024 12:40:37.664 Peer 0 is looking for 6 piece(s) of BOARS.
+11.11.2024 12:40:37.666 6 piece(s) of BOARS is not available for 0.
+11.11.2024 12:41:35.396 Seller 1 offers 5 piece(s) of BOARS.
+11.11.2024 12:41:35.401 5 piece(s) of BOARS offered from 1 added to stock by coordinator 2.
+11.11.2024 12:41:35.402 Peer 0 is looking for 6 piece(s) of BOARS.
+11.11.2024 12:41:35.404 6 piece(s) of BOARS is not available for 0.
+11.11.2024 12:41:35.404 Peer 0 is buying 6 piece(s) of BOARS.
+11.11.2024 12:41:35.405 Peer 0 couldn't buy product from coordinator 2. Timestamp is invalid.
+11.11.2024 12:41:57.364 Seller 1 offers 5 piece(s) of BOARS.
+11.11.2024 12:41:57.369 5 piece(s) of BOARS offered from 1 added to stock by coordinator 2.
+11.11.2024 12:41:57.370 Peer 0 is looking for 6 piece(s) of BOARS.
+11.11.2024 12:41:57.372 6 piece(s) of BOARS is not available for 0.
+11.11.2024 12:41:57.374 Peer 0 is buying 6 piece(s) of BOARS.
+11.11.2024 12:41:57.375 Peer 0 couldn't buy product from coordinator 2. Timestamp is invalid.
+11.11.2024 12:50:37.461 Peer 0 (Buyer)
+11.11.2024 12:50:37.469 Peer 1 (Seller)
+11.11.2024 12:50:37.469 Peer 2 (Buyer)
+11.11.2024 12:50:43.485 Seller 1 offers 1 piece(s) of SALT.
+11.11.2024 12:50:43.501 1 piece(s) of SALT offered from 1 added to stock by coordinator 2.
+11.11.2024 12:50:45.475 Peer 0 is looking for 2 piece(s) of BOARS.
+11.11.2024 12:50:45.484 2 piece(s) of BOARS is available for 0.
+11.11.2024 12:50:45.485 Peer 0 is buying 2 piece(s) of BOARS.
+11.11.2024 12:50:45.488 2 piece(s) of BOARS bought from coordinator 2 by peer 0.
+11.11.2024 12:50:45.491 Seller 1 received 3 money.
+11.11.2024 12:50:45.491 Seller 1 received 3 money.
+11.11.2024 12:50:52.475 Seller 1 offers 1 piece(s) of SALT.
+11.11.2024 12:50:52.478 1 piece(s) of SALT offered from 1 added to stock by coordinator 2.
+11.11.2024 12:50:55.474 Peer 0 is looking for 1 piece(s) of SALT.
+11.11.2024 12:50:55.476 1 piece(s) of SALT is available for 0.
+11.11.2024 12:50:55.477 Peer 0 is buying 1 piece(s) of SALT.
+11.11.2024 12:50:55.478 1 piece(s) of SALT bought from coordinator 2 by peer 0.
+11.11.2024 12:50:55.478 Seller 1 received 1 money.
+11.11.2024 12:51:01.474 Seller 1 offers 2 piece(s) of FISH.
+11.11.2024 12:51:01.477 2 piece(s) of FISH offered from 1 added to stock by coordinator 2.
+11.11.2024 12:54:10.435 Peer 0 (Buyer)
+11.11.2024 12:54:10.442 Peer 1 (Seller)
+11.11.2024 12:54:10.443 Peer 2 (Buyer)
+11.11.2024 12:54:13.459 Seller 1 offers 2 piece(s) of BOARS.
+11.11.2024 12:54:13.460 Peer 0 is looking for 5 piece(s) of FISH.
+11.11.2024 12:54:13.469 2 piece(s) of BOARS offered from 1 added to stock by coordinator 2.
+11.11.2024 12:54:13.474 5 piece(s) of FISH is not available for 0.
+11.11.2024 12:54:20.448 Seller 1 offers 2 piece(s) of BOARS.
+11.11.2024 12:54:20.451 2 piece(s) of BOARS offered from 1 added to stock by coordinator 2.
+11.11.2024 12:54:21.448 Peer 0 is looking for 5 piece(s) of FISH.
+11.11.2024 12:54:21.449 5 piece(s) of FISH is not available for 0.
+11.11.2024 12:54:27.446 Seller 1 offers 4 piece(s) of BOARS.
+11.11.2024 12:54:27.446 4 piece(s) of BOARS offered from 1 added to stock by coordinator 2.
+11.11.2024 12:54:29.446 Peer 0 is looking for 4 piece(s) of FISH.
+11.11.2024 12:54:29.448 4 piece(s) of FISH is not available for 0.
+11.11.2024 12:54:34.448 Seller 1 offers 5 piece(s) of FISH.
+11.11.2024 12:54:34.451 5 piece(s) of FISH offered from 1 added to stock by coordinator 2.
+11.11.2024 12:54:37.447 Peer 0 is looking for 5 piece(s) of SALT.
+11.11.2024 12:54:37.449 5 piece(s) of SALT is not available for 0.
+11.11.2024 12:54:41.443 Seller 1 offers 3 piece(s) of FISH.
+11.11.2024 12:54:41.446 3 piece(s) of FISH offered from 1 added to stock by coordinator 2.
+11.11.2024 12:54:45.446 Peer 0 is looking for 1 piece(s) of SALT.
+11.11.2024 12:54:45.448 1 piece(s) of SALT is not available for 0.
+11.11.2024 12:54:48.448 Seller 1 offers 1 piece(s) of BOARS.
+11.11.2024 12:54:48.451 1 piece(s) of BOARS offered from 1 added to stock by coordinator 2.
+11.11.2024 12:54:53.447 Peer 0 is looking for 3 piece(s) of BOARS.
+11.11.2024 12:54:53.450 3 piece(s) of BOARS is available for 0.
+11.11.2024 12:54:53.451 Peer 0 is buying 3 piece(s) of BOARS.
+11.11.2024 12:54:53.453 3 piece(s) of BOARS bought from coordinator 2 by peer 0.
+11.11.2024 12:54:53.456 Seller 1 received 3 money.
+11.11.2024 12:54:53.457 Seller 1 received 3 money.
+11.11.2024 12:54:53.457 Seller 1 received 3 money.
+11.11.2024 12:54:55.446 Seller 1 offers 5 piece(s) of BOARS.
+11.11.2024 12:54:55.451 5 piece(s) of BOARS offered from 1 added to stock by coordinator 2.
+11.11.2024 12:55:01.447 Peer 0 is looking for 2 piece(s) of BOARS.
+11.11.2024 12:55:01.449 2 piece(s) of BOARS is available for 0.
+11.11.2024 12:55:01.450 Peer 0 is buying 2 piece(s) of BOARS.
+11.11.2024 12:55:01.451 2 piece(s) of BOARS bought from coordinator 2 by peer 0.
+11.11.2024 12:55:01.451 Seller 1 received 3 money.
+11.11.2024 12:55:01.452 Seller 1 received 3 money.
+11.11.2024 12:55:02.446 Seller 1 offers 5 piece(s) of FISH.
+11.11.2024 12:55:02.449 5 piece(s) of FISH offered from 1 added to stock by coordinator 2.

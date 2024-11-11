@@ -1,6 +1,8 @@
 package peer;
 
 import product.Product;
+import utils.Logger;
+import utils.Messages;
 import utils.VectorClock;
 
 import java.rmi.RemoteException;
@@ -20,6 +22,7 @@ public class Seller extends APeer {
 
     @Override
     public void start() throws RemoteException {
+        Logger.log("Peer " + peerID + " (Seller)");
         ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
 
         int initialDelay = new Random().nextInt(1,11);
@@ -31,9 +34,9 @@ public class Seller extends APeer {
                 return;
             }
             Product product = Product.pickRandomProduct();
-            int amount = new Random().nextInt(6);
+            int amount = (int) (Math.random() * 5) + 1;
             try {
-                this.peers[this.coordinatorID].offer(product, amount, this.timestamp, this.peerID);
+                initiateOffer(product, amount);
             } catch (RemoteException e) {
                 throw new RuntimeException(e);
             }
@@ -54,13 +57,23 @@ public class Seller extends APeer {
     @Override
     public void offerAck(int[] traderTimestamp) throws RemoteException {
         // this method only exists for keeping the seller timestamp up to date.
+        this.timestamp[this.peerID] += 1;
         this.timestamp = VectorClock.merge(this.timestamp, traderTimestamp);
     }
 
     @Override
     public void pay(int price, int[] traderTimestamp) throws RemoteException {
         money += price;
+        Logger.log(Messages.getPayMoney(this.peerID, price));
+
         // keep the seller timestamp up to date.
+        this.timestamp[this.peerID] += 1;
         this.timestamp = VectorClock.merge(this.timestamp, traderTimestamp);
+    }
+
+    public void initiateOffer(Product product, int amount) throws RemoteException {
+        Logger.log(Messages.getOfferMessage(peerID, amount, product));
+        this.timestamp[this.peerID] += 1;
+        this.peers[this.coordinatorID].offer(product, amount, this.timestamp, this.peerID);
     }
 }

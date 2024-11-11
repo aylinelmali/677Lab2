@@ -97,6 +97,14 @@ public class TraderState {
         return new TraderState(sellerQueues);
     }
 
+    public static void resetTraderState() {
+        try {
+            BufferedWriter writer = Files.newBufferedWriter(TraderState.FILE_PATH, StandardCharsets.UTF_8);
+            writer.write("");
+            writer.close();
+        } catch (IOException ignored) {}
+    }
+
     private static String listToString(List<Integer> list) {
         StringBuilder sb = new StringBuilder();
         for (int j : list) {

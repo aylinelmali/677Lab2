@@ -5,21 +5,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import product.Product;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.util.List;
 
 public class TraderStateTest {
 
     @BeforeEach
     public void setUp() {
-        try {
-            BufferedWriter writer = Files.newBufferedWriter(TraderState.FILE_PATH, StandardCharsets.UTF_8);
-            writer.write("");
-            writer.close();
-        } catch (IOException ignored) {}
+        TraderState.resetTraderState();
     }
 
     @Test
