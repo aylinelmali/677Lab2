@@ -63,7 +63,7 @@ public class Seller extends APeer {
 
     @Override
     public void pay(int price, int[] traderTimestamp) throws RemoteException {
-        money += price;
+        money += price; // pay the seller
         Logger.log(Messages.getPayMoney(this.peerID, price));
 
         // keep the seller timestamp up to date.

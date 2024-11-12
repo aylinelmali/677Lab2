@@ -95,6 +95,11 @@ public class Buyer extends APeer {
         this.amount = (int) (Math.random() * 5) + 1;
     }
 
+    /**
+     * Picks a new product.
+     * @param product product to pick.
+     * @param amount amount to pick.
+     */
     public void pickProduct(Product product, int amount) {
         this.product = product;
         this.amount = amount;

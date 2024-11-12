@@ -410,3 +410,71 @@
 12.11.2024 17:44:29.206 5 piece(s) of SALT is available for peer 0.
 12.11.2024 17:44:29.207 Peer 0 is buying 5 piece(s) of SALT.
 12.11.2024 17:44:36.204 Seller 1 offers 4 piece(s) of BOARS.
+12.11.2024 17:52:07.455 Peer 0 is doing election. Tags: [0].
+12.11.2024 17:52:07.458 Peer 1 is doing election. Tags: [0, 1].
+12.11.2024 17:52:07.458 Peer 2 is doing election. Tags: [0, 1, 2].
+12.11.2024 17:52:07.458 Peer 3 is doing election. Tags: [0, 1, 2, 3].
+12.11.2024 17:52:07.458 Election done. New coordinator is 3.
+12.11.2024 17:52:07.459 Peer 1 sets coordinator to 3.
+12.11.2024 17:52:07.459 Peer 2 sets coordinator to 3.
+12.11.2024 17:52:07.459 Peer 3 sets coordinator to 3.
+12.11.2024 17:52:07.460 Peer 0 sets coordinator to 3.
+12.11.2024 17:52:14.744 Seller 0 offers 5 piece(s) of BOARS.
+12.11.2024 17:52:14.749 5 piece(s) of BOARS offered from 0 added to stock by coordinator 1.
+12.11.2024 17:52:14.750 Seller 0 offers 3 piece(s) of FISH.
+12.11.2024 17:52:14.751 3 piece(s) of FISH offered from 0 added to stock by coordinator 1.
+12.11.2024 17:52:14.755 Seller 1 offers 5 piece(s) of BOARS.
+12.11.2024 17:52:14.756 5 piece(s) of BOARS offered from 1 added to stock by coordinator 2.
+12.11.2024 17:52:14.756 Peer 0 is looking for 3 piece(s) of BOARS.
+12.11.2024 17:52:14.757 3 piece(s) of BOARS is available for peer 0.
+12.11.2024 17:52:14.757 Peer 0 is buying 3 piece(s) of BOARS.
+12.11.2024 17:52:14.758 3 piece(s) of BOARS bought from coordinator 2 by peer 0.
+12.11.2024 17:52:14.758 Seller 1 received 3 money.
+12.11.2024 17:52:14.758 Seller 1 received 3 money.
+12.11.2024 17:52:14.758 Seller 1 received 3 money.
+12.11.2024 17:52:14.760 Seller 1 offers 5 piece(s) of BOARS.
+12.11.2024 17:52:14.760 5 piece(s) of BOARS offered from 1 added to stock by coordinator 2.
+12.11.2024 17:52:14.760 Peer 0 is looking for 6 piece(s) of BOARS.
+12.11.2024 17:52:14.761 6 piece(s) of BOARS is not available for peer 0.
+12.11.2024 17:52:14.761 Peer 0 is buying 6 piece(s) of BOARS.
+12.11.2024 17:52:14.761 Peer 0 couldn't buy product from coordinator 2. Timestamp is invalid.
+12.11.2024 17:52:14.762 Seller 1 offers 5 piece(s) of BOARS.
+12.11.2024 17:52:14.763 5 piece(s) of BOARS offered from 1 added to stock by coordinator 2.
+12.11.2024 17:52:14.763 Peer 0 is buying 3 piece(s) of BOARS.
+12.11.2024 17:52:14.763 Peer 0 couldn't buy product from coordinator 2. Timestamp is invalid.
+12.11.2024 17:52:14.765 Peer 0 is doing election. Tags: [0].
+12.11.2024 17:52:14.766 Peer 1 doesn't respond.
+12.11.2024 17:52:14.766 Peer 2 is doing election. Tags: [0, 2].
+12.11.2024 17:52:14.766 Peer 3 doesn't respond.
+12.11.2024 17:52:14.767 Election done. New coordinator is 2.
+12.11.2024 17:52:14.767 Peer 0 doesn't respond.
+12.11.2024 17:52:14.767 Peer 1 doesn't respond.
+12.11.2024 17:52:14.767 Election done. New coordinator is 2.
+12.11.2024 17:52:14.767 Peer 2 doesn't respond.
+12.11.2024 17:52:14.768 Peer 0 is doing election. Tags: [0].
+12.11.2024 17:52:14.768 Peer 1 is doing election. Tags: [0, 1].
+12.11.2024 17:52:14.768 Peer 2 is doing election. Tags: [0, 1, 2].
+12.11.2024 17:52:14.768 Peer 3 is doing election. Tags: [0, 1, 2, 3].
+12.11.2024 17:52:14.768 Election done. New coordinator is 3.
+12.11.2024 17:52:14.769 Peer 1 sets coordinator to 3.
+12.11.2024 17:52:14.769 Peer 2 sets coordinator to 3.
+12.11.2024 17:52:14.769 Peer 3 sets coordinator to 3.
+12.11.2024 17:52:14.769 Peer 0 sets coordinator to 3.
+12.11.2024 17:52:14.770 Peer 0 is doing election. Tags: [0].
+12.11.2024 17:52:14.770 Peer 1 is doing election. Tags: [0, 1].
+12.11.2024 17:52:14.770 Peer 2 is doing election. Tags: [0, 1, 2].
+12.11.2024 17:52:14.770 Peer 3 is doing election. Tags: [0, 1, 2, 3].
+12.11.2024 17:52:14.771 Peer 2 is doing election. Tags: [2].
+12.11.2024 17:52:14.771 Election done. New coordinator is 3.
+12.11.2024 17:52:14.771 Peer 3 is doing election. Tags: [2, 3].
+12.11.2024 17:52:14.771 Peer 1 sets coordinator to 3.
+12.11.2024 17:52:14.771 Peer 2 sets coordinator to 3.
+12.11.2024 17:52:14.772 Peer 3 sets coordinator to 3.
+12.11.2024 17:52:14.772 Peer 0 is doing election. Tags: [2, 3, 0].
+12.11.2024 17:52:14.772 Peer 1 is doing election. Tags: [2, 3, 0, 1].
+12.11.2024 17:52:14.772 Peer 0 sets coordinator to 3.
+12.11.2024 17:52:14.772 Election done. New coordinator is 3.
+12.11.2024 17:52:14.772 Peer 3 sets coordinator to 3.
+12.11.2024 17:52:14.772 Peer 0 sets coordinator to 3.
+12.11.2024 17:52:14.772 Peer 1 sets coordinator to 3.
+12.11.2024 17:52:14.772 Peer 2 sets coordinator to 3.

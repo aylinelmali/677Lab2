@@ -189,4 +189,8 @@ public abstract class APeer extends UnicastRemoteObject implements IPeer {
         newSearchPath[tags.length] = peerID;
         return newSearchPath;
     }
+
+    public void setPeers(IPeer[] peers) {
+        this.peers = peers;
+    }
 }
