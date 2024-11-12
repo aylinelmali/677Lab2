@@ -6,11 +6,21 @@ import utils.Messages;
 import utils.TraderState;
 import utils.VectorClock;
 
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
-public abstract class APeer implements IPeer {
+public abstract class APeer extends UnicastRemoteObject implements IPeer {
+
+    public static int REGISTRY_ID = 1099;
 
     public final int peerID;
     public IPeer[] peers;
@@ -21,12 +31,15 @@ public abstract class APeer implements IPeer {
     public boolean crashIfCoordinator;
     public boolean crashed;
 
-    public APeer(int peerID, int peersAmt, int coordinatorID) {
+    public APeer(int peerID, int peersAmt, int coordinatorID) throws RemoteException {
+        super();
         this.peerID = peerID;
         this.coordinatorID = coordinatorID;
 
         this.timestamp = new int[peersAmt];
         Arrays.fill(timestamp, 0);
+
+        this.peers = new IPeer[peersAmt];
 
         crashIfCoordinator = true;
         crashed = false;
@@ -35,16 +48,19 @@ public abstract class APeer implements IPeer {
     @Override
     public void start() throws RemoteException {
         // TODO: Crash behavior
+        Registry registry = LocateRegistry.getRegistry("127.0.0.1", REGISTRY_ID);
+        for (int i = 0; i < this.peers.length; i++) {
+            try {
+                peers[i] = (IPeer) registry.lookup("" + i);
+            } catch (NotBoundException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     @Override
     public final int getPeerID() throws RemoteException {
         return peerID;
-    }
-
-    @Override
-    public final void setPeers(IPeer[] peers) {
-        this.peers = peers;
     }
 
     @Override

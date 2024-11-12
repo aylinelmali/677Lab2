@@ -16,13 +16,14 @@ public class Buyer extends APeer {
     private Product product;
     private int amount;
 
-    public Buyer(int peerID, int peersAmt, int coordinatorID) {
+    public Buyer(int peerID, int peersAmt, int coordinatorID) throws RemoteException {
         super(peerID, peersAmt, coordinatorID);
         pickRandomProduct();
     }
 
     @Override
     public void start() throws RemoteException {
+        super.start();
         Logger.log("Peer " + peerID + " (Buyer)");
         ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
 
@@ -40,7 +41,6 @@ public class Buyer extends APeer {
                 throw new RuntimeException(e);
             }
         }, initialDelay, period, TimeUnit.SECONDS);
-        super.start();
     }
 
     @Override

@@ -15,13 +15,14 @@ public class Seller extends APeer {
 
     int money;
 
-    public Seller(int peerID, int peersAmt, int coordinatorID) {
+    public Seller(int peerID, int peersAmt, int coordinatorID) throws RemoteException {
         super(peerID, peersAmt, coordinatorID);
         this.money = 0;
     }
 
     @Override
     public void start() throws RemoteException {
+        super.start();
         Logger.log("Peer " + peerID + " (Seller)");
         ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
 
@@ -41,7 +42,6 @@ public class Seller extends APeer {
                 throw new RuntimeException(e);
             }
         }, initialDelay, period, TimeUnit.SECONDS);
-        super.start();
     }
 
     @Override
