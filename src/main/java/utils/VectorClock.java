@@ -9,6 +9,9 @@ public class VectorClock {
         return !isSmallerThan(vc1, vc2) && !isSmallerThan(vc2, vc1);
     }
 
+    // Checks if each element in vc1 is less than or equal to the
+    // corresponding element in vc2, meaning vc1 happened
+    // "no later than" vc2
     public static boolean isSmallerOrEqualThan(int[] vc1, int[] vc2) {
         boolean smallerOrEqual = true;
 
@@ -21,6 +24,7 @@ public class VectorClock {
         return smallerOrEqual;
     }
 
+    // Checks if vc1 is strictly smaller than vc2
     public static boolean isSmallerThan(int[] vc1, int[] vc2) {
         if (Arrays.equals(vc1, vc2)) return false;
         return isSmallerOrEqualThan(vc1, vc2);
