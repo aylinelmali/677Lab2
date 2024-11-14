@@ -13,10 +13,12 @@ import java.util.concurrent.TimeUnit;
 
 public class Seller extends APeer {
 
-    int money;
+    public static final int PERIOD = 4;
 
-    public Seller(int peerID, int peersAmt, int coordinatorID) throws RemoteException {
-        super(peerID, peersAmt, coordinatorID);
+    public int money;
+
+    public Seller(int peerID, int peersAmt) throws RemoteException {
+        super(peerID, peersAmt);
         this.money = 0;
     }
 
@@ -27,7 +29,6 @@ public class Seller extends APeer {
         ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
 
         int initialDelay = new Random().nextInt(1,11);
-        int period = new Random().nextInt(7,11);
 
         executor.scheduleAtFixedRate(() -> {
             // only sell something if not coordinator
@@ -41,7 +42,7 @@ public class Seller extends APeer {
             } catch (RemoteException e) {
                 throw new RuntimeException(e);
             }
-        }, initialDelay, period, TimeUnit.SECONDS);
+        }, initialDelay, PERIOD, TimeUnit.SECONDS);
     }
 
     @Override

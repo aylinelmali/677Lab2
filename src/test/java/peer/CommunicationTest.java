@@ -17,8 +17,8 @@ public class CommunicationTest {
 
     @Test
     public void testOffer() throws RemoteException {
-        Seller seller = new Seller(0,2,1);
-        APeer coordinator = new APeer(1, 2, 1) {
+        Seller seller = new Seller(0,2);
+        APeer coordinator = new APeer(1, 2) {
             @Override
             public void discoverAck(Product product, boolean available, int[] traderTimestamp) throws RemoteException {}
 
@@ -34,6 +34,7 @@ public class CommunicationTest {
         IPeer[] peers = new IPeer[] { seller, coordinator };
         seller.setPeers(peers);
         coordinator.setPeers(peers);
+        seller.election(new int[] {});
         seller.initiateOffer(Product.BOARS, 5);
         Assertions.assertArrayEquals(new int[] { 2, 1 }, seller.timestamp);
         Assertions.assertArrayEquals(new int[] { 1, 1 }, coordinator.timestamp);
@@ -51,9 +52,9 @@ public class CommunicationTest {
 
     @Test
     public void testSuccessfulBuy() throws RemoteException {
-        Buyer buyer = new Buyer(0,3,2);
-        Seller seller = new Seller(1,3,2);
-        APeer coordinator = new APeer(2, 3, 2) {
+        Buyer buyer = new Buyer(0,3);
+        Seller seller = new Seller(1,3);
+        APeer coordinator = new APeer(2, 3) {
             @Override
             public void discoverAck(Product product, boolean available, int[] traderTimestamp) throws RemoteException {}
 
@@ -70,6 +71,7 @@ public class CommunicationTest {
         buyer.setPeers(peers);
         seller.setPeers(peers);
         coordinator.setPeers(peers);
+        buyer.election(new int[] {});
         // put items in stock
         seller.initiateOffer(Product.BOARS, 5);
         Assertions.assertArrayEquals(new int[] { 0, 0, 0 }, buyer.timestamp);
@@ -91,9 +93,9 @@ public class CommunicationTest {
 
     @Test
     public void testFailedBuyInvalidTimestamp() throws RemoteException {
-        Buyer buyer = new Buyer(0,3,2);
-        Seller seller = new Seller(1,3,2);
-        APeer coordinator = new APeer(2, 3, 2) {
+        Buyer buyer = new Buyer(0,3);
+        Seller seller = new Seller(1,3);
+        APeer coordinator = new APeer(2, 3) {
             @Override
             public void discoverAck(Product product, boolean available, int[] traderTimestamp) throws RemoteException {}
 
@@ -110,6 +112,7 @@ public class CommunicationTest {
         buyer.setPeers(peers);
         seller.setPeers(peers);
         coordinator.setPeers(peers);
+        buyer.election(new int[] {});
         // put items in stock
         seller.initiateOffer(Product.BOARS, 5);
         Assertions.assertArrayEquals(new int[] { 0, 0, 0 }, buyer.timestamp);
@@ -130,9 +133,9 @@ public class CommunicationTest {
 
     @Test
     public void testFailedBuyLowStock() throws RemoteException {
-        Buyer buyer = new Buyer(0,3,2);
-        Seller seller = new Seller(1,3,2);
-        APeer coordinator = new APeer(2, 3, 2) {
+        Buyer buyer = new Buyer(0,3);
+        Seller seller = new Seller(1,3);
+        APeer coordinator = new APeer(2, 3) {
             @Override
             public void discoverAck(Product product, boolean available, int[] traderTimestamp) throws RemoteException {}
 
@@ -149,6 +152,7 @@ public class CommunicationTest {
         buyer.setPeers(peers);
         seller.setPeers(peers);
         coordinator.setPeers(peers);
+        buyer.election(new int[] {});
         // put items in stock
         seller.initiateOffer(Product.BOARS, 5);
         Assertions.assertArrayEquals(new int[] { 0, 0, 0 }, buyer.timestamp);

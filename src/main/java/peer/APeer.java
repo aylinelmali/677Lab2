@@ -31,10 +31,9 @@ public abstract class APeer extends UnicastRemoteObject implements IPeer {
     public boolean crashIfCoordinator;
     public boolean crashed;
 
-    public APeer(int peerID, int peersAmt, int coordinatorID) throws RemoteException {
+    public APeer(int peerID, int peersAmt) throws RemoteException {
         super();
         this.peerID = peerID;
-        this.coordinatorID = coordinatorID;
 
         this.timestamp = new int[peersAmt];
         Arrays.fill(timestamp, 0);
@@ -47,7 +46,23 @@ public abstract class APeer extends UnicastRemoteObject implements IPeer {
 
     @Override
     public void start() throws RemoteException {
-        // TODO: Crash behavior
+        if (this.peerID == peers.length-1 && crashIfCoordinator && peers.length > 3) { // This is the highest coordinator
+            int initialDelay = 10;
+            int period = 10;
+
+            ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+            executor.scheduleAtFixedRate(() -> {
+                crashed = !crashed;
+                if (!crashed) {
+                    try {
+                        election(new int[] {});
+                    } catch (RemoteException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }, initialDelay, period, TimeUnit.SECONDS);
+        }
+
         Registry registry = LocateRegistry.getRegistry("127.0.0.1", REGISTRY_ID);
         for (int i = 0; i < this.peers.length; i++) {
             try {
@@ -106,74 +121,87 @@ public abstract class APeer extends UnicastRemoteObject implements IPeer {
     }
 
     @Override
-    public final synchronized void discover(Product product, int amount, int[] buyerTimestamp, int buyerID) throws RemoteException {
+    public final void discover(Product product, int amount, int[] buyerTimestamp, int buyerID) throws RemoteException {
         // simulate crash
         simulateCrash();
 
-        // method
-        if (this.peerID != this.coordinatorID) {
-            throw new RemoteException();
-        }
+        boolean available;
 
-        TraderState traderState = TraderState.readTraderState();
-        boolean available = traderState.productAvailable(product, amount);
-        if (available) {
-            Logger.log(Messages.getProductAvailableMessage(amount, product, buyerID));
-        } else {
-            Logger.log(Messages.getProductUnavailableMessage(amount, product, buyerID));
-        }
+        synchronized (this) {
+            // method
+            if (this.peerID != this.coordinatorID) {
+                throw new RemoteException();
+            }
 
-        this.timestamp[this.peerID] += 1;
-        this.timestamp = VectorClock.merge(this.timestamp, buyerTimestamp);
+            TraderState traderState = TraderState.readTraderState();
+            available = traderState.productAvailable(product, amount);
+            if (available) {
+                Logger.log(Messages.getProductAvailableMessage(amount, product, buyerID));
+            } else {
+                Logger.log(Messages.getProductUnavailableMessage(amount, product, buyerID));
+            }
+
+            this.timestamp[this.peerID] += 1;
+            this.timestamp = VectorClock.merge(this.timestamp, buyerTimestamp);
+        }
 
         peers[buyerID].discoverAck(product, available, this.timestamp);
     }
 
     @Override
-    public final synchronized void buy(Product product, int amount, int[] buyerTimestamp, int buyerID) throws RemoteException {
+    public final void buy(Product product, int amount, int[] buyerTimestamp, int buyerID) throws RemoteException {
         // simulate crash
         simulateCrash();
 
-        // method
-        if (this.peerID != this.coordinatorID) {
-            throw new RemoteException();
-        }
-        TraderState traderState = TraderState.readTraderState();
-        if (VectorClock.isSmallerThan(this.timestamp, buyerTimestamp) && traderState.productAvailable(product, amount)) {
-            this.timestamp[this.peerID] += 1;
-            this.timestamp = VectorClock.merge(this.timestamp, buyerTimestamp);
+        boolean bought = false;
 
-            peers[buyerID].buyAck(product, true, this.timestamp);
-
-            List<Integer> sellers = traderState.takeOutOfStock(product, amount);
-            TraderState.writeTraderState(traderState);
-            Logger.log(Messages.getBoughtMessage(amount, product, this.peerID, buyerID));
-            for (Integer sellerID : sellers) {
-                peers[sellerID].pay(product.getPrice(), this.timestamp);
+        synchronized (this) {
+            // method
+            if (this.peerID != this.coordinatorID) {
+                throw new RemoteException();
             }
-        } else { // timestamp of this peer is greater or concurrent.
-            Logger.log(Messages.getBuyFailedMessage(buyerID, this.peerID));
-            peers[buyerID].buyAck(product, false, this.timestamp);
+
+            TraderState traderState = TraderState.readTraderState();
+            if (VectorClock.isSmallerThan(this.timestamp, buyerTimestamp) && traderState.productAvailable(product, amount)) {
+                this.timestamp[this.peerID] += 1;
+                this.timestamp = VectorClock.merge(this.timestamp, buyerTimestamp);
+
+                bought = true;
+
+                List<Integer> sellers = traderState.takeOutOfStock(product, amount);
+                TraderState.writeTraderState(traderState);
+                Logger.log(Messages.getBoughtMessage(amount, product, this.peerID, buyerID));
+                for (Integer sellerID : sellers) {
+                    peers[sellerID].pay(product.getPrice(), this.timestamp);
+                }
+            } else { // timestamp of this peer is greater or concurrent.
+                Logger.log(Messages.getBuyFailedMessage(buyerID, this.peerID));
+            }
         }
+
+        peers[buyerID].buyAck(product, bought, this.timestamp);
     }
 
     @Override
-    public final synchronized void offer(Product product, int amount, int[] sellerTimestamp, int sellerID) throws RemoteException {
+    public final void offer(Product product, int amount, int[] sellerTimestamp, int sellerID) throws RemoteException {
         // simulate crash
         simulateCrash();
 
-        // method
-        if (this.peerID != this.coordinatorID) {
-            throw new RemoteException();
+        synchronized (this) {
+            // method
+            if (this.peerID != this.coordinatorID) {
+                throw new RemoteException();
+            }
+
+            TraderState traderState = TraderState.readTraderState();
+            traderState.putIntoStock(product, amount, sellerID);
+            TraderState.writeTraderState(traderState);
+            Logger.log(Messages.getAddedToStockMessage(amount, product, sellerID, this.peerID));
+
+            this.timestamp[this.peerID] += 1;
+            this.timestamp = VectorClock.merge(this.timestamp, sellerTimestamp);
         }
 
-        TraderState traderState = TraderState.readTraderState();
-        traderState.putIntoStock(product, amount, sellerID);
-        TraderState.writeTraderState(traderState);
-        Logger.log(Messages.getAddedToStockMessage(amount, product, sellerID, this.peerID));
-
-        this.timestamp[this.peerID] += 1;
-        this.timestamp = VectorClock.merge(this.timestamp, sellerTimestamp);
         peers[sellerID].offerAck(this.timestamp);
     }
 

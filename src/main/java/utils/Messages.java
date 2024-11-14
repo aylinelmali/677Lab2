@@ -6,7 +6,7 @@ import java.util.Arrays;
 
 public class Messages {
     public static String getElectionDoneMessage(int coordinatorID) {
-        return "Election done. New coordinator is " + coordinatorID + ".";
+        return "Election done. New coordinator is peer " + coordinatorID + ".";
     }
 
     public static String getPeerDoingElectionMessage(int peerID, int[] newTags) {
@@ -55,5 +55,17 @@ public class Messages {
 
     public static String getProductUnavailableMessage(int amount, Product product, int buyerID) {
         return amount + " piece(s) of " + product + " is not available for peer " + buyerID + ".";
+    }
+
+    public static String getPeerCouldNotConnectMessage(int peerID, int coordinatorID) {
+        return "Peer " + peerID + " could not connect with coordinator peer " + coordinatorID + ". Starting election.";
+    }
+
+    public static String getDiscardingLookupMessage(int peerID) {
+        return "Peer " + peerID + " is new coordinator. Discarding lookup.";
+    }
+
+    public static String getDiscardingBuyMessage(int peerID) {
+        return "Peer " + peerID + " is new coordinator. Discarding buy.";
     }
 }

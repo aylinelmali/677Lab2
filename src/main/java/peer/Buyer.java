@@ -13,11 +13,13 @@ import java.util.concurrent.TimeUnit;
 
 public class Buyer extends APeer {
 
+    public static final int PERIOD = 4;
+
     private Product product;
     private int amount;
 
-    public Buyer(int peerID, int peersAmt, int coordinatorID) throws RemoteException {
-        super(peerID, peersAmt, coordinatorID);
+    public Buyer(int peerID, int peersAmt) throws RemoteException {
+        super(peerID, peersAmt);
         pickRandomProduct();
     }
 
@@ -28,7 +30,6 @@ public class Buyer extends APeer {
         ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
 
         int initialDelay = new Random().nextInt(1,11);
-        int period = new Random().nextInt(7,11);
 
         executor.scheduleAtFixedRate(() -> {
             // only buy something if not coordinator
@@ -40,7 +41,7 @@ public class Buyer extends APeer {
             } catch (RemoteException e) {
                 throw new RuntimeException(e);
             }
-        }, initialDelay, period, TimeUnit.SECONDS);
+        }, initialDelay, PERIOD, TimeUnit.SECONDS);
     }
 
     @Override
@@ -76,15 +77,37 @@ public class Buyer extends APeer {
     }
 
     public void initiateDiscovery() throws RemoteException {
-        Logger.log(Messages.getDiscoveryMessage(peerID, amount, product));
-        this.timestamp[this.peerID] += 1;
-        this.peers[this.coordinatorID].discover(this.product, this.amount, this.timestamp, this.peerID);
+        try {
+            Logger.log(Messages.getDiscoveryMessage(peerID, amount, product));
+            this.timestamp[this.peerID] += 1;
+            this.peers[this.coordinatorID].discover(this.product, this.amount, this.timestamp, this.peerID);
+        } catch (RemoteException e) {
+            Logger.log(Messages.getPeerCouldNotConnectMessage(peerID, coordinatorID));
+            election(new int[] {}); // coordinator crashed, start election
+            Logger.log(Messages.getElectionDoneMessage(coordinatorID));
+            if (this.peerID != this.coordinatorID) { // if this peer is a coordinator, discard discovery.
+                initiateDiscovery(); // retry discovery after election
+            } else {
+                Logger.log(Messages.getDiscardingLookupMessage(this.peerID));
+            }
+        }
     }
 
     public void initiateBuy() throws RemoteException {
-        Logger.log(Messages.getBuyMessage(peerID, amount, product));
-        this.timestamp[this.peerID] += 1;
-        peers[coordinatorID].buy(this.product, this.amount, this.timestamp, this.peerID);
+        try {
+            Logger.log(Messages.getBuyMessage(peerID, amount, product));
+            this.timestamp[this.peerID] += 1;
+            peers[coordinatorID].buy(this.product, this.amount, this.timestamp, this.peerID);
+        } catch (RemoteException e) {
+            Logger.log(Messages.getPeerCouldNotConnectMessage(peerID, coordinatorID));
+            election(new int[] {}); // coordinator crashed, start election
+            Logger.log(Messages.getElectionDoneMessage(coordinatorID));
+            if (this.peerID != this.coordinatorID) { // if this peer is a coordinator, discard discovery.
+                initiateBuy(); // retry buy after election
+            } else {
+                Logger.log(Messages.getDiscardingBuyMessage(this.peerID));
+            }
+        }
     }
 
     /**

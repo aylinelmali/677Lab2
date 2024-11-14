@@ -53,8 +53,8 @@ public class AsterixAndTheTradingPost {
             try {
                 Registry registry = LocateRegistry.getRegistry("127.0.0.1", REGISTRY_ID);
                 IPeer peer = (nodeIndex % 2 == 0) ?
-                        new Buyer(nodeIndex, nodeAmt, nodeAmt-1) :
-                        new Seller(nodeIndex, nodeAmt, nodeAmt-1);
+                        new Buyer(nodeIndex, nodeAmt) :
+                        new Seller(nodeIndex, nodeAmt);
 
                 registry.rebind("" + peer.getPeerID(), peer);
             } catch (RemoteException e) {

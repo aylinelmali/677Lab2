@@ -9,10 +9,10 @@ public class TraderElectionTest {
 
     @Test
     public void electionTest() throws RemoteException {
-        APeer peer1 = new Buyer(0, 4, 0);
-        APeer peer2 = new Buyer(1, 4, 0);
-        APeer peer3 = new Buyer(2, 4, 0);
-        APeer peer4 = new Buyer(3, 4, 0);
+        APeer peer1 = new Buyer(0, 4);
+        APeer peer2 = new Buyer(1, 4);
+        APeer peer3 = new Buyer(2, 4);
+        APeer peer4 = new Buyer(3, 4);
         APeer[] peers = {peer1, peer2, peer3, peer4};
         peer1.setPeers(peers);
         peer2.setPeers(peers);
@@ -34,10 +34,10 @@ public class TraderElectionTest {
 
     @Test
     public void concurrentElectionTest() throws RemoteException, InterruptedException {
-        APeer peer1 = new Buyer(0, 4, 0);
-        APeer peer2 = new Buyer(1, 4, 0);
-        APeer peer3 = new Buyer(2, 4, 0);
-        APeer peer4 = new Buyer(3, 4, 0);
+        APeer peer1 = new Buyer(0, 4);
+        APeer peer2 = new Buyer(1, 4);
+        APeer peer3 = new Buyer(2, 4);
+        APeer peer4 = new Buyer(3, 4);
         APeer[] peers = {peer1, peer2, peer3, peer4};
         peer1.setPeers(peers);
         peer2.setPeers(peers);
@@ -78,11 +78,14 @@ public class TraderElectionTest {
 
     @Test
     public void reelectionTest() throws RemoteException {
-        APeer peer1 = new Buyer(0, 4, 3);
-        APeer peer3 = new Buyer(2, 4, 3);
+        APeer peer1 = new Buyer(0, 4);
+        APeer peer3 = new Buyer(2, 4);
         APeer[] peers = {peer1, null, peer3, null};
         peer1.setPeers(peers);
         peer3.setPeers(peers);
+
+        peer1.coordinatorID = 3;
+        peer3.coordinatorID = 3;
 
         Assertions.assertEquals(3, peer1.coordinatorID);
         Assertions.assertEquals(3, peer3.coordinatorID);
