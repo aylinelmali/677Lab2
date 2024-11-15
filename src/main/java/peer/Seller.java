@@ -15,6 +15,7 @@ public class Seller extends APeer {
 
     public static final int PERIOD = 4;
 
+    // Amount of money earned through sales
     public int money;
 
     public Seller(int peerID, int peersAmt) throws RemoteException {
@@ -55,6 +56,7 @@ public class Seller extends APeer {
         // Do nothing. This peer is not a buyer!
     }
 
+    // Handles coordinator acknowledgement seller's offer
     @Override
     public void offerAck(int[] traderTimestamp) throws RemoteException {
         // this method only exists for keeping the seller timestamp up to date.
@@ -62,6 +64,7 @@ public class Seller extends APeer {
         this.timestamp = VectorClock.merge(this.timestamp, traderTimestamp);
     }
 
+    // Handles payment from coordinator
     @Override
     public void pay(int price, int[] traderTimestamp) throws RemoteException {
         money += price; // pay the seller
@@ -72,6 +75,7 @@ public class Seller extends APeer {
         this.timestamp = VectorClock.merge(this.timestamp, traderTimestamp);
     }
 
+    // Send offer to coordinator for product and amount
     public void initiateOffer(Product product, int amount) throws RemoteException {
         Logger.log(Messages.getOfferMessage(peerID, amount, product));
         this.timestamp[this.peerID] += 1;
