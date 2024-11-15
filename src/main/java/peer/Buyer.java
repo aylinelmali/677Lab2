@@ -44,11 +44,13 @@ public class Buyer extends APeer {
         }, initialDelay, PERIOD, TimeUnit.SECONDS);
     }
 
+    // Handles acknowledgement from coordinator about product availability
     @Override
     public void discoverAck(Product product, boolean available, int[] traderTimestamp) throws RemoteException {
         // check if ack is valid
         this.timestamp[this.peerID] += 1;
         this.timestamp = VectorClock.merge(this.timestamp, traderTimestamp);
+        // Check if product is available and if so, trigger buy request
         if (this.product == product && available) {
             initiateBuy();
         } else {
@@ -56,11 +58,13 @@ public class Buyer extends APeer {
         }
     }
 
+    // Handle acknowledgment of successful or failed purchase
     @Override
     public void buyAck(Product product, boolean bought, int[] traderTimestamp) throws RemoteException {
         // check if ack is valid
         this.timestamp[this.peerID] += 1;
         this.timestamp = VectorClock.merge(this.timestamp, traderTimestamp);
+        // Check if product was bought successfully and if so, pick new product
         if (this.product == product && bought) {
             pickRandomProduct();
         }
@@ -76,6 +80,7 @@ public class Buyer extends APeer {
         // Do nothing. This peer is not a Seller
     }
 
+    // Initiate discovery request to coordinator
     public void initiateDiscovery() throws RemoteException {
         try {
             Logger.log(Messages.getDiscoveryMessage(peerID, amount, product));
@@ -93,6 +98,7 @@ public class Buyer extends APeer {
         }
     }
 
+    // Initiate a purchase request to coordinator
     public void initiateBuy() throws RemoteException {
         try {
             Logger.log(Messages.getBuyMessage(peerID, amount, product));
