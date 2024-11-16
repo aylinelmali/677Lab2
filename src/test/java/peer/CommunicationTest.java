@@ -179,17 +179,17 @@ public class CommunicationTest {
 
         // put items in stock
         seller.initiateOffer(Product.BOARS, 5);
-        Thread.sleep(1000);
+        Thread.sleep(100);
 
         Assertions.assertArrayEquals(new int[] { 0, 0, 0 }, buyer.timestamp);
         Assertions.assertArrayEquals(new int[] { 0, 2, 1 }, seller.timestamp);
         Assertions.assertArrayEquals(new int[] { 0, 1, 1 }, coordinator.timestamp);
 
         buyer.pickProduct(Product.BOARS, 6);
-        Thread.sleep(1000);
+        Thread.sleep(100);
 
         buyer.initiateDiscovery();
-        Thread.sleep(1000);
+        Thread.sleep(100);
 
         TraderState traderState = TraderState.readTraderState();
         Assertions.assertFalse(traderState.productAvailable(Product.BOARS, 6));
@@ -201,10 +201,10 @@ public class CommunicationTest {
         Assertions.assertArrayEquals(new int[] { 1, 1, 2 }, coordinator.timestamp);
 
         buyer.pickProduct(Product.BOARS, 6);
-        Thread.sleep(1000);
+        Thread.sleep(100);
 
         buyer.initiateBuy();
-        Thread.sleep(1000);
+        Thread.sleep(100);
 
         Assertions.assertFalse(traderState.productAvailable(Product.BOARS, 6));
         Assertions.assertTrue(traderState.productAvailable(Product.BOARS, 5));

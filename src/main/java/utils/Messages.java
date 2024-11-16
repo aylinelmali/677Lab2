@@ -4,6 +4,9 @@ import product.Product;
 
 import java.util.Arrays;
 
+/**
+ * This class contains all the messages for the logging.
+ */
 public class Messages {
     public static String getElectionDoneMessage(int coordinatorID) {
         return "Election done. New coordinator is peer " + coordinatorID + ".";

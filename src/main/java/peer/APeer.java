@@ -14,10 +14,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 public abstract class APeer extends UnicastRemoteObject implements IPeer {
 
@@ -25,7 +22,7 @@ public abstract class APeer extends UnicastRemoteObject implements IPeer {
 
     public final int peerID;
     public IPeer[] peers;
-    public int coordinatorID;
+    public volatile int coordinatorID;
     public int[] timestamp;
 
     // crash functionality
@@ -52,8 +49,8 @@ public abstract class APeer extends UnicastRemoteObject implements IPeer {
     @Override
     public void start() throws RemoteException {
         if (this.peerID == peers.length-1 && crashIfCoordinator && peers.length > 3) { // This is the highest coordinator
-            int initialDelay = new Random().nextInt(5,11);
-            int period = new Random().nextInt(5,11);
+            int initialDelay = new Random().nextInt(10,21);
+            int period = new Random().nextInt(10,21);
 
             // simulate periodic crash and recovery functionality
             ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
@@ -90,6 +87,7 @@ public abstract class APeer extends UnicastRemoteObject implements IPeer {
         // simulate crash
         simulateCrash();
 
+        // add job to thread pool
         executorService.submit(() -> {
             try {
                 // check if election has reached every peer
@@ -125,6 +123,7 @@ public abstract class APeer extends UnicastRemoteObject implements IPeer {
         // simulate crash
         simulateCrash();
 
+        // add job to thread pool
         executorService.submit(() -> {
             // forward coordinator message to next peer in the tags array.
             try {
@@ -150,6 +149,7 @@ public abstract class APeer extends UnicastRemoteObject implements IPeer {
             throw new RemoteException();
         }
 
+        // add job to thread pool
         executorService.submit(() -> {
             try {
                 boolean available;
@@ -192,6 +192,7 @@ public abstract class APeer extends UnicastRemoteObject implements IPeer {
             throw new RemoteException();
         }
 
+        // add job to thread pool
         executorService.submit(() -> {
             try {
                 boolean bought = false;
@@ -239,6 +240,7 @@ public abstract class APeer extends UnicastRemoteObject implements IPeer {
             throw new RemoteException();
         }
 
+        // add job to thread pool
         executorService.submit(() -> {
             try {
                 synchronized (this) {
@@ -302,5 +304,18 @@ public abstract class APeer extends UnicastRemoteObject implements IPeer {
 
     public void setPeers(IPeer[] peers) {
         this.peers = peers;
+    }
+
+    /**
+     * Waits until coordinator id changes or timeout occurs.
+     * @param oldCoordinatorID Old coordinator id.
+     * @param timeout Timeout for maximum wait.
+     */
+    public void waitForCoordinatorChangeWithTimeout(int oldCoordinatorID, long timeout) {
+        long startTime = System.currentTimeMillis();
+        long currentTime;
+        do {
+            currentTime = System.currentTimeMillis();
+        } while(this.coordinatorID == oldCoordinatorID && currentTime - startTime < timeout);
     }
 }

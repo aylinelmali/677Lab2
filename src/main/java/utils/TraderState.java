@@ -14,6 +14,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Contains all the logic for managing the items offered by the trader,
+ */
 public class TraderState {
 
     // Allows trader to keep track of sellers and deposited items
@@ -23,14 +26,23 @@ public class TraderState {
         this.sellerQueues = sellerQueues;
     }
 
-    // Checks if a specified amount of product is available
+    /**
+     * Checks if a specified amount of product is available.
+     * @param product Product to check.
+     * @param amount Amount to check
+     * @return Product available or not.
+     */
     public boolean productAvailable(Product product, int amount) {
         List<Integer> stock = this.sellerQueues.get(product);
         return stock != null && stock.size() >= amount;
     }
 
-    // Removes specified amount of product from stock and returns list of
-    // seller IDs corresponding to these units
+    /**
+     * Removes specified amount of product from stock and returns list of seller IDs corresponding to these units.
+     * @param product Product to take out.
+     * @param amount Amount to take out.
+     * @return List of sellers to pay.
+     */
     public List<Integer> takeOutOfStock(Product product, int amount) {
         if (!productAvailable(product, amount)) {
             return List.of();
@@ -41,15 +53,20 @@ public class TraderState {
             return List.of();
         }
 
-        List<Integer> first = queue.subList(0, amount);
-        List<Integer> last = queue.subList(amount, queue.size());
+        List<Integer> first = queue.subList(0, amount); // sellers to pay
+        List<Integer> last = queue.subList(amount, queue.size()); // remaining sellers
 
         sellerQueues.put(product, last);
 
         return first;
     }
 
-    // Adds specified amount of product to queue for a given seller
+    /**
+     * Adds specified amount of product to queue for a given seller.
+     * @param product Product to add.
+     * @param amount Amount to add.
+     * @param sellerID ID of the seller.
+     */
     public void putIntoStock(Product product, int amount, int sellerID) {
         List<Integer> queue = sellerQueues.computeIfAbsent(product, k -> new ArrayList<>());
 
@@ -58,7 +75,7 @@ public class TraderState {
         }
     }
 
-    // static stuff
+    // static functions
 
     public static final Path FILE_PATH = Paths.get("trader_state.txt");
 
@@ -75,16 +92,19 @@ public class TraderState {
         createFile(sb.toString());
     }
 
-    // Reads saved state from text file
+    /**
+     * Reads saved state from text file.
+     * @return the trader state read from file.
+     */
     public static synchronized TraderState readTraderState() {
         String text = readFile();
 
         Map<Product, List<Integer>> sellerQueues = new HashMap<>();
-        if (text == null) {
+        if (text == null) { // file contains no data: create new trader state and return it.
             for (Product product : Product.values()) {
                 sellerQueues.put(product, new ArrayList<>());
             }
-        } else {
+        } else { // file contains data: parse data and return it.
             String[] lines = text.split("\n");
             for (String line : lines) {
                 String[] parts = line.split(":");
@@ -104,7 +124,9 @@ public class TraderState {
         return new TraderState(sellerQueues);
     }
 
-    // Clears contents of text file to reset the marketplace state
+    /**
+     * Clears contents of text file to reset the marketplace state.
+     */
     public static void resetTraderState() {
         try {
             BufferedWriter writer = Files.newBufferedWriter(TraderState.FILE_PATH, StandardCharsets.UTF_8);
@@ -113,7 +135,11 @@ public class TraderState {
         } catch (IOException ignored) {}
     }
 
-    // Converts list of seller IDs to a comma separated string for writing
+    /**
+     * Converts list of seller IDs to a comma separated string for writing.
+     * @param list List to convert.
+     * @return String representation of list.
+     */
     private static String listToString(List<Integer> list) {
         StringBuilder sb = new StringBuilder();
         for (int j : list) {
@@ -122,7 +148,10 @@ public class TraderState {
         return sb.toString();
     }
 
-    // Writes a string to text file to save trader's current state
+    /**
+     * Writes a string to text file to save trader's current state
+     * @param content Content to write to file.
+     */
     private static void createFile(String content) {
         try {
             BufferedWriter writer = Files.newBufferedWriter(TraderState.FILE_PATH, StandardCharsets.UTF_8);
@@ -131,7 +160,10 @@ public class TraderState {
         } catch (IOException ignored) {}
     }
 
-    // Reads the contexts of text file into string
+    /**
+     * Reads the contexts of text file into string.
+     * @return Content of the file.
+     */
     private static String readFile() {
 
         StringBuilder text = new StringBuilder();

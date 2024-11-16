@@ -58,11 +58,14 @@ public class Buyer extends APeer {
     // Handles acknowledgement from coordinator about product availability
     @Override
     public void discoverAck(Product product, boolean available, int[] traderTimestamp) throws RemoteException {
+        // add job to thread pool
         executorService.submit(() -> {
             try {
                 // check if ack is valid
-                this.timestamp[this.peerID] += 1;
-                this.timestamp = VectorClock.merge(this.timestamp, traderTimestamp);
+                synchronized(this) {
+                    this.timestamp[this.peerID] += 1;
+                    this.timestamp = VectorClock.merge(this.timestamp, traderTimestamp);
+                }
                 // Check if product is available and if so, trigger buy request
                 if (this.product == product && available) {
                     initiateBuy();
@@ -78,10 +81,13 @@ public class Buyer extends APeer {
     // Handle acknowledgment of successful or failed purchase
     @Override
     public void buyAck(Product product, boolean bought, int[] traderTimestamp) throws RemoteException {
+        // add job to thread pool
         executorService.submit(() -> {
             // check if ack is valid
-            this.timestamp[this.peerID] += 1;
-            this.timestamp = VectorClock.merge(this.timestamp, traderTimestamp);
+            synchronized(this) {
+                this.timestamp[this.peerID] += 1;
+                this.timestamp = VectorClock.merge(this.timestamp, traderTimestamp);
+            }
             // Check if product was bought successfully and if so, pick new product
             if (this.product == product && bought) {
                 pickRandomProduct();
@@ -101,16 +107,25 @@ public class Buyer extends APeer {
 
     // Initiate discovery request to coordinator
     public void initiateDiscovery() throws RemoteException {
+        // add job to thread pool
         executorService.submit(() -> {
             try {
                 Logger.log(Messages.getDiscoveryMessage(peerID, amount, product));
-                this.timestamp[this.peerID] += 1;
+                // updating timestamp and try discovery
+                synchronized(this) {
+                    this.timestamp[this.peerID] += 1;
+                }
                 this.peers[this.coordinatorID].discover(this.product, this.amount, this.timestamp, this.peerID);
             } catch (RemoteException e) {
                 try {
                     Logger.log(Messages.getPeerCouldNotConnectMessage(peerID, coordinatorID));
-                    election(new int[] {}); // coordinator crashed, start election
-                    Logger.log(Messages.getElectionDoneMessage(coordinatorID));
+
+                    // coordinator crashed, start election
+                    int oldCoordinatorID = this.coordinatorID;
+                    election(new int[] {});
+                    waitForCoordinatorChangeWithTimeout(oldCoordinatorID, 5000);
+
+                    // election done, retry.
                     if (this.peerID != this.coordinatorID) { // if this peer is a coordinator, discard discovery.
                         initiateDiscovery(); // retry discovery after election
                     } else {
@@ -125,16 +140,23 @@ public class Buyer extends APeer {
 
     // Initiate a purchase request to coordinator
     public void initiateBuy() throws RemoteException {
+        // add job to thread pool
         executorService.submit(() -> {
             try {
                 Logger.log(Messages.getBuyMessage(peerID, amount, product));
-                this.timestamp[this.peerID] += 1;
+                synchronized (this) {
+                    this.timestamp[this.peerID] += 1;
+                }
                 peers[coordinatorID].buy(this.product, this.amount, this.timestamp, this.peerID);
             } catch (RemoteException e) {
                 try {
                     Logger.log(Messages.getPeerCouldNotConnectMessage(peerID, coordinatorID));
-                    election(new int[] {}); // coordinator crashed, start election
-                    Logger.log(Messages.getElectionDoneMessage(coordinatorID));
+                    // coordinator crashed, start election
+                    int oldCoordinatorID = this.coordinatorID;
+                    election(new int[] {});
+                    waitForCoordinatorChangeWithTimeout(oldCoordinatorID, 5000);
+
+                    // election done, retry.
                     if (this.peerID != this.coordinatorID) { // if this peer is a coordinator, discard discovery.
                         initiateBuy(); // retry buy after election
                     } else {

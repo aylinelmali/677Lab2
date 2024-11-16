@@ -4,6 +4,7 @@ import product.Product;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.concurrent.Callable;
 
 public interface IPeer extends Remote {
     /**
