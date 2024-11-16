@@ -1,22 +1,20 @@
-import peer.Buyer;
 import peer.IPeer;
-import peer.Seller;
 import utils.Logger;
 import utils.TraderState;
 
-import java.net.*;
-import java.rmi.AlreadyBoundException;
+import java.io.IOException;
 import java.rmi.NotBoundException;
-import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.util.*;
 
 public class AsterixAndTheTradingPost {
 
     public static int REGISTRY_ID = 1099;
+    public static String CLASS_PATH = "build/classes/java/main";
+    public static String BUYER_CLASS = "peer.Buyer";
+    public static String SELLER_CLASS = "peer.Seller";
 
-    public static void main(String[] args) throws RemoteException, InterruptedException, NotBoundException {
+    public static void main(String[] args) throws IOException, InterruptedException, NotBoundException {
 
         TraderState.resetTraderState();
 
@@ -24,10 +22,42 @@ public class AsterixAndTheTradingPost {
 
         Registry registry = LocateRegistry.createRegistry(REGISTRY_ID);
 
+        Process[] processes = new Process[n];
+
         // initialize all peers
         for (int i = 0; i < n; i++) {
-            Thread thread = getThread(i, n);
-            thread.start();
+
+            ProcessBuilder processBuilder = new ProcessBuilder(
+                    "java",
+                    "-cp",
+                    CLASS_PATH,
+                    i % 2 == 0 ? BUYER_CLASS : SELLER_CLASS,
+                    "" + i,
+                    "" + n
+            );
+            Process process = processBuilder.start();
+            var inputStream = process.getInputStream();
+            var outputStream = System.out;
+            processes[i] = process;
+
+            // redirect output stream of peer process to main process
+            new Thread(() -> {
+                try (inputStream; outputStream) {
+                    int byteData;
+                    while ((byteData = inputStream.read()) != -1) {
+                        outputStream.write(byteData);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }).start();
+
+            // destroy process when stopping program
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                if (process.isAlive()) {
+                    process.destroy();
+                }
+            }));
         }
 
         Thread.sleep(1000); // ensure that all peers are bound
@@ -46,20 +76,9 @@ public class AsterixAndTheTradingPost {
 
         // do initial election
         peers[0].election(new int[] {});
-    }
 
-    private static Thread getThread(int nodeIndex, int nodeAmt) {
-        return new Thread(() -> {
-            try {
-                Registry registry = LocateRegistry.getRegistry("127.0.0.1", REGISTRY_ID);
-                IPeer peer = (nodeIndex % 2 == 0) ?
-                        new Buyer(nodeIndex, nodeAmt) :
-                        new Seller(nodeIndex, nodeAmt);
-
-                registry.rebind("" + peer.getPeerID(), peer);
-            } catch (RemoteException e) {
-                throw new RuntimeException(e);
-            }
-        });
+        for (int i = 0; i < n; i++) {
+            processes[i].waitFor();
+        }
     }
 }

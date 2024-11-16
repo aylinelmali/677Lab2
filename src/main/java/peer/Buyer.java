@@ -6,12 +6,22 @@ import utils.Messages;
 import utils.VectorClock;
 
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class Buyer extends APeer {
+
+    public static void main(String[] args) throws RemoteException {
+        int peerID = Integer.parseInt(args[0]);
+        int peersAmt = Integer.parseInt(args[1]);
+
+        Registry registry = LocateRegistry.getRegistry("127.0.0.1", REGISTRY_ID);
+        registry.rebind("" + peerID, new Buyer(peerID, peersAmt));
+    }
 
     public static final int PERIOD = 4;
 
