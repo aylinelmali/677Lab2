@@ -14,6 +14,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -31,6 +32,8 @@ public abstract class APeer extends UnicastRemoteObject implements IPeer {
     public boolean crashIfCoordinator;
     public boolean crashed;
 
+    protected ExecutorService executorService;
+
     public APeer(int peerID, int peersAmt) throws RemoteException {
         super();
         this.peerID = peerID;
@@ -42,6 +45,8 @@ public abstract class APeer extends UnicastRemoteObject implements IPeer {
 
         crashIfCoordinator = true;
         crashed = false;
+
+        executorService = Executors.newFixedThreadPool(10);
     }
 
     @Override
@@ -83,41 +88,51 @@ public abstract class APeer extends UnicastRemoteObject implements IPeer {
         // simulate crash
         simulateCrash();
 
-        // method
-        for (int tag : tags) {
-            if (tag == peerID) {
-                int max = Arrays.stream(tags).max().getAsInt();
-                this.coordinatorID = max;
-                Logger.log(Messages.getElectionDoneMessage(max));
-                peers[(peerID + 1) % peers.length].coordinator(max, peerID);
-                return;
-            }
-        }
-
-        int[] newTags = getNewTags(tags);
-        Logger.log(Messages.getPeerDoingElectionMessage(peerID, newTags));
-        for (int i = 1; i <= peers.length; i++) {
-            int nextPeer = (i + peerID) % peers.length;
+        executorService.submit(() -> {
             try {
-                peers[nextPeer].election(newTags);
-                break;
-            } catch (Exception e) {
-                Logger.log(Messages.getPeerDoesNotRespondMessage(nextPeer));
+                for (int tag : tags) {
+                    if (tag == peerID) {
+                        int max = Arrays.stream(tags).max().getAsInt();
+                        Logger.log(Messages.getElectionDoneMessage(max));
+                        coordinator(max, tags);
+                        return;
+                    }
+                }
+
+                int[] newTags = getNewTags(tags);
+                Logger.log(Messages.getPeerDoingElectionMessage(peerID, newTags));
+                for (int i = 1; i <= peers.length; i++) {
+                    int nextPeer = (i + peerID) % peers.length;
+                    try {
+                        peers[nextPeer].election(newTags);
+                        break;
+                    } catch (Exception e) {
+                        Logger.log(Messages.getPeerDoesNotRespondMessage(nextPeer));
+                    }
+                }
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
             }
-        }
+        });
     }
 
     @Override
-    public final void coordinator(int coordinatorID, int initiatorID) throws RemoteException {
+    public final void coordinator(int coordinatorID, int[] tags) throws RemoteException {
         // simulate crash
         simulateCrash();
 
-        // method
-        Logger.log(Messages.getPeerUpdatesCoordinatorMessage(this.peerID, coordinatorID));
-        this.coordinatorID = coordinatorID;
-        if (peerID != initiatorID) {
-            peers[(peerID + 1) % peers.length].coordinator(coordinatorID, initiatorID);
-        }
+        executorService.submit(() -> {
+            try {
+                Logger.log(Messages.getPeerUpdatesCoordinatorMessage(this.peerID, coordinatorID));
+                this.coordinatorID = coordinatorID;
+                int tagIndex = getPeerTagIndex(peerID, tags);
+                if (tagIndex != -1 && tagIndex < tags.length-1) {
+                    peers[tags[tagIndex + 1]].coordinator(coordinatorID, tags);
+                }
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     @Override
@@ -125,27 +140,37 @@ public abstract class APeer extends UnicastRemoteObject implements IPeer {
         // simulate crash
         simulateCrash();
 
-        boolean available;
-
-        synchronized (this) {
-            // method
-            if (this.peerID != this.coordinatorID) {
-                throw new RemoteException();
-            }
-
-            TraderState traderState = TraderState.readTraderState();
-            available = traderState.productAvailable(product, amount);
-            if (available) {
-                Logger.log(Messages.getProductAvailableMessage(amount, product, buyerID));
-            } else {
-                Logger.log(Messages.getProductUnavailableMessage(amount, product, buyerID));
-            }
-
-            this.timestamp[this.peerID] += 1;
-            this.timestamp = VectorClock.merge(this.timestamp, buyerTimestamp);
+        if (this.peerID != this.coordinatorID) {
+            throw new RemoteException();
         }
 
-        peers[buyerID].discoverAck(product, available, this.timestamp);
+        executorService.submit(() -> {
+            try {
+                boolean available;
+
+                synchronized (this) {
+                    // method
+                    if (this.peerID != this.coordinatorID) {
+                        return;
+                    }
+
+                    TraderState traderState = TraderState.readTraderState();
+                    available = traderState.productAvailable(product, amount);
+                    if (available) {
+                        Logger.log(Messages.getProductAvailableMessage(amount, product, buyerID));
+                    } else {
+                        Logger.log(Messages.getProductUnavailableMessage(amount, product, buyerID));
+                    }
+
+                    this.timestamp[this.peerID] += 1;
+                    this.timestamp = VectorClock.merge(this.timestamp, buyerTimestamp);
+                }
+
+                peers[buyerID].discoverAck(product, available, this.timestamp);
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     @Override
@@ -153,33 +178,41 @@ public abstract class APeer extends UnicastRemoteObject implements IPeer {
         // simulate crash
         simulateCrash();
 
-        boolean bought = false;
-
-        synchronized (this) {
-            // method
-            if (this.peerID != this.coordinatorID) {
-                throw new RemoteException();
-            }
-
-            TraderState traderState = TraderState.readTraderState();
-            if (VectorClock.isSmallerThan(this.timestamp, buyerTimestamp) && traderState.productAvailable(product, amount)) {
-                this.timestamp[this.peerID] += 1;
-                this.timestamp = VectorClock.merge(this.timestamp, buyerTimestamp);
-
-                bought = true;
-
-                List<Integer> sellers = traderState.takeOutOfStock(product, amount);
-                TraderState.writeTraderState(traderState);
-                Logger.log(Messages.getBoughtMessage(amount, product, this.peerID, buyerID));
-                for (Integer sellerID : sellers) {
-                    peers[sellerID].pay(product.getPrice(), this.timestamp);
-                }
-            } else { // timestamp of this peer is greater or concurrent.
-                Logger.log(Messages.getBuyFailedMessage(buyerID, this.peerID));
-            }
+        if (this.peerID != this.coordinatorID) {
+            throw new RemoteException();
         }
 
-        peers[buyerID].buyAck(product, bought, this.timestamp);
+        executorService.submit(() -> {
+            try {
+                boolean bought = false;
+                synchronized (this) {
+                    // method
+                    if (this.peerID != this.coordinatorID) {
+                        return;
+                    }
+
+                    TraderState traderState = TraderState.readTraderState();
+                    if (VectorClock.isSmallerThan(this.timestamp, buyerTimestamp) && traderState.productAvailable(product, amount)) {
+                        this.timestamp[this.peerID] += 1;
+                        this.timestamp = VectorClock.merge(this.timestamp, buyerTimestamp);
+
+                        bought = true;
+
+                        List<Integer> sellers = traderState.takeOutOfStock(product, amount);
+                        TraderState.writeTraderState(traderState);
+                        Logger.log(Messages.getBoughtMessage(amount, product, this.peerID, buyerID));
+                        for (Integer sellerID : sellers) {
+                            peers[sellerID].pay(product.getPrice(), this.timestamp);
+                        }
+                    } else { // timestamp of this peer is greater or concurrent.
+                        Logger.log(Messages.getBuyFailedMessage(buyerID, this.peerID));
+                    }
+                }
+                peers[buyerID].buyAck(product, bought, this.timestamp);
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     @Override
@@ -187,22 +220,31 @@ public abstract class APeer extends UnicastRemoteObject implements IPeer {
         // simulate crash
         simulateCrash();
 
-        synchronized (this) {
-            // method
-            if (this.peerID != this.coordinatorID) {
-                throw new RemoteException();
-            }
-
-            TraderState traderState = TraderState.readTraderState();
-            traderState.putIntoStock(product, amount, sellerID);
-            TraderState.writeTraderState(traderState);
-            Logger.log(Messages.getAddedToStockMessage(amount, product, sellerID, this.peerID));
-
-            this.timestamp[this.peerID] += 1;
-            this.timestamp = VectorClock.merge(this.timestamp, sellerTimestamp);
+        if (this.peerID != this.coordinatorID) {
+            throw new RemoteException();
         }
 
-        peers[sellerID].offerAck(this.timestamp);
+        executorService.submit(() -> {
+            try {
+                synchronized (this) {
+                    // method
+                    if (this.peerID != this.coordinatorID) {
+                        return;
+                    }
+
+                    TraderState traderState = TraderState.readTraderState();
+                    traderState.putIntoStock(product, amount, sellerID);
+                    TraderState.writeTraderState(traderState);
+                    Logger.log(Messages.getAddedToStockMessage(amount, product, sellerID, this.peerID));
+
+                    this.timestamp[this.peerID] += 1;
+                    this.timestamp = VectorClock.merge(this.timestamp, sellerTimestamp);
+                }
+                peers[sellerID].offerAck(this.timestamp);
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     private void simulateCrash() throws RemoteException {
@@ -216,6 +258,15 @@ public abstract class APeer extends UnicastRemoteObject implements IPeer {
         System.arraycopy(tags, 0, newSearchPath, 0, tags.length);
         newSearchPath[tags.length] = peerID;
         return newSearchPath;
+    }
+
+    private int getPeerTagIndex(int peerID, int[] tags) {
+        for (int i = 0; i < tags.length; i++) {
+            if (tags[i] == peerID) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     public void setPeers(IPeer[] peers) {

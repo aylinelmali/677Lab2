@@ -27,9 +27,9 @@ public interface IPeer extends Remote {
     /**
      * Sends a coordinator to the next peer to tell the new coordinator.
      * @param coordinatorID The id of the new coordinator.
-     * @param initiatorID The id of the peer who initiated the election.
+     * @param tags Contains the ID's of the election.
      */
-    void coordinator(int coordinatorID, int initiatorID) throws RemoteException;
+    void coordinator(int coordinatorID, int[] tags) throws RemoteException;
 
     // Trading
 

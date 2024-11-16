@@ -16,7 +16,7 @@ public class CommunicationTest {
     }
 
     @Test
-    public void testOffer() throws RemoteException {
+    public void testOffer() throws RemoteException, InterruptedException {
         Seller seller = new Seller(0,2);
         APeer coordinator = new APeer(1, 2) {
             @Override
@@ -34,11 +34,17 @@ public class CommunicationTest {
         IPeer[] peers = new IPeer[] { seller, coordinator };
         seller.setPeers(peers);
         coordinator.setPeers(peers);
+
         seller.election(new int[] {});
+        Thread.sleep(1000);
+
         seller.initiateOffer(Product.BOARS, 5);
+        Thread.sleep(1000);
         Assertions.assertArrayEquals(new int[] { 2, 1 }, seller.timestamp);
         Assertions.assertArrayEquals(new int[] { 1, 1 }, coordinator.timestamp);
+
         seller.initiateOffer(Product.FISH, 3);
+        Thread.sleep(1000);
 
         TraderState traderState = TraderState.readTraderState();
         Assertions.assertTrue(traderState.productAvailable(Product.BOARS, 5));
@@ -51,7 +57,7 @@ public class CommunicationTest {
     }
 
     @Test
-    public void testSuccessfulBuy() throws RemoteException {
+    public void testSuccessfulBuy() throws RemoteException, InterruptedException {
         Buyer buyer = new Buyer(0,3);
         Seller seller = new Seller(1,3);
         APeer coordinator = new APeer(2, 3) {
@@ -71,15 +77,22 @@ public class CommunicationTest {
         buyer.setPeers(peers);
         seller.setPeers(peers);
         coordinator.setPeers(peers);
+
         buyer.election(new int[] {});
+        Thread.sleep(1000);
         // put items in stock
         seller.initiateOffer(Product.BOARS, 5);
+        Thread.sleep(1000);
+
         Assertions.assertArrayEquals(new int[] { 0, 0, 0 }, buyer.timestamp);
         Assertions.assertArrayEquals(new int[] { 0, 2, 1 }, seller.timestamp);
         Assertions.assertArrayEquals(new int[] { 0, 1, 1 }, coordinator.timestamp);
 
         buyer.pickProduct(Product.BOARS, 3);
+        Thread.sleep(1000);
+
         buyer.initiateDiscovery();
+        Thread.sleep(1000);
 
         TraderState traderState = TraderState.readTraderState();
         Assertions.assertFalse(traderState.productAvailable(Product.BOARS, 3));
@@ -92,7 +105,7 @@ public class CommunicationTest {
     }
 
     @Test
-    public void testFailedBuyInvalidTimestamp() throws RemoteException {
+    public void testFailedBuyInvalidTimestamp() throws RemoteException, InterruptedException {
         Buyer buyer = new Buyer(0,3);
         Seller seller = new Seller(1,3);
         APeer coordinator = new APeer(2, 3) {
@@ -112,15 +125,23 @@ public class CommunicationTest {
         buyer.setPeers(peers);
         seller.setPeers(peers);
         coordinator.setPeers(peers);
+
         buyer.election(new int[] {});
+        Thread.sleep(1000);
+
         // put items in stock
         seller.initiateOffer(Product.BOARS, 5);
+        Thread.sleep(1000);
+
         Assertions.assertArrayEquals(new int[] { 0, 0, 0 }, buyer.timestamp);
         Assertions.assertArrayEquals(new int[] { 0, 2, 1 }, seller.timestamp);
         Assertions.assertArrayEquals(new int[] { 0, 1, 1 }, coordinator.timestamp);
 
         buyer.pickProduct(Product.BOARS, 3);
+        Thread.sleep(1000);
+
         buyer.initiateBuy();
+        Thread.sleep(1000);
 
         TraderState traderState = TraderState.readTraderState();
         Assertions.assertTrue(traderState.productAvailable(Product.BOARS, 5));
@@ -132,7 +153,7 @@ public class CommunicationTest {
     }
 
     @Test
-    public void testFailedBuyLowStock() throws RemoteException {
+    public void testFailedBuyLowStock() throws RemoteException, InterruptedException {
         Buyer buyer = new Buyer(0,3);
         Seller seller = new Seller(1,3);
         APeer coordinator = new APeer(2, 3) {
@@ -152,15 +173,23 @@ public class CommunicationTest {
         buyer.setPeers(peers);
         seller.setPeers(peers);
         coordinator.setPeers(peers);
+
         buyer.election(new int[] {});
+        Thread.sleep(1000);
+
         // put items in stock
         seller.initiateOffer(Product.BOARS, 5);
+        Thread.sleep(1000);
+
         Assertions.assertArrayEquals(new int[] { 0, 0, 0 }, buyer.timestamp);
         Assertions.assertArrayEquals(new int[] { 0, 2, 1 }, seller.timestamp);
         Assertions.assertArrayEquals(new int[] { 0, 1, 1 }, coordinator.timestamp);
 
         buyer.pickProduct(Product.BOARS, 6);
+        Thread.sleep(1000);
+
         buyer.initiateDiscovery();
+        Thread.sleep(1000);
 
         TraderState traderState = TraderState.readTraderState();
         Assertions.assertFalse(traderState.productAvailable(Product.BOARS, 6));
@@ -172,7 +201,11 @@ public class CommunicationTest {
         Assertions.assertArrayEquals(new int[] { 1, 1, 2 }, coordinator.timestamp);
 
         buyer.pickProduct(Product.BOARS, 6);
+        Thread.sleep(1000);
+
         buyer.initiateBuy();
+        Thread.sleep(1000);
+
         Assertions.assertFalse(traderState.productAvailable(Product.BOARS, 6));
         Assertions.assertTrue(traderState.productAvailable(Product.BOARS, 5));
         Assertions.assertEquals(0, seller.money);

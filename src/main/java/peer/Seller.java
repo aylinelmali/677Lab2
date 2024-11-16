@@ -69,26 +69,36 @@ public class Seller extends APeer {
     // Handles coordinator acknowledgement seller's offer
     @Override
     public void offerAck(int[] traderTimestamp) throws RemoteException {
-        // this method only exists for keeping the seller timestamp up to date.
-        this.timestamp[this.peerID] += 1;
-        this.timestamp = VectorClock.merge(this.timestamp, traderTimestamp);
+        executorService.submit(() -> {
+            // this method only exists for keeping the seller timestamp up to date.
+            this.timestamp[this.peerID] += 1;
+            this.timestamp = VectorClock.merge(this.timestamp, traderTimestamp);
+        });
     }
 
     // Handles payment from coordinator
     @Override
     public void pay(int price, int[] traderTimestamp) throws RemoteException {
-        money += price; // pay the seller
-        Logger.log(Messages.getPayMoney(this.peerID, price));
+        executorService.submit(() -> {
+            money += price; // pay the seller
+            Logger.log(Messages.getPayMoney(this.peerID, price));
 
-        // keep the seller timestamp up to date.
-        this.timestamp[this.peerID] += 1;
-        this.timestamp = VectorClock.merge(this.timestamp, traderTimestamp);
+            // keep the seller timestamp up to date.
+            this.timestamp[this.peerID] += 1;
+            this.timestamp = VectorClock.merge(this.timestamp, traderTimestamp);
+        });
     }
 
     // Send offer to coordinator for product and amount
     public void initiateOffer(Product product, int amount) throws RemoteException {
-        Logger.log(Messages.getOfferMessage(peerID, amount, product));
-        this.timestamp[this.peerID] += 1;
-        this.peers[this.coordinatorID].offer(product, amount, this.timestamp, this.peerID);
+        executorService.submit(() -> {
+            try {
+                Logger.log(Messages.getOfferMessage(peerID, amount, product));
+                this.timestamp[this.peerID] += 1;
+                this.peers[this.coordinatorID].offer(product, amount, this.timestamp, this.peerID);
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 }
