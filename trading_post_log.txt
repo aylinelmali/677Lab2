@@ -53477,3 +53477,37 @@
 15.11.2024 22:14:57.369 Election done. New coordinator is peer 2.
 15.11.2024 22:14:57.371 Peer 0 sets coordinator to 2.
 15.11.2024 22:14:57.371 Peer 2 sets coordinator to 2.
+15.11.2024 22:37:10.417 Peer 0 is doing election. Tags: [0].
+15.11.2024 22:37:10.420 Peer 1 doesn't respond.
+15.11.2024 22:37:10.420 Peer 2 is doing election. Tags: [0, 2].
+15.11.2024 22:37:10.421 Peer 3 doesn't respond.
+15.11.2024 22:37:10.421 Election done. New coordinator is peer 2.
+15.11.2024 22:37:10.423 Peer 0 sets coordinator to 2.
+15.11.2024 22:37:10.423 Peer 2 sets coordinator to 2.
+15.11.2024 22:37:11.434 Peer 0 is doing election. Tags: [0].
+15.11.2024 22:37:11.435 Peer 1 is doing election. Tags: [0, 1].
+15.11.2024 22:37:11.436 Peer 2 is doing election. Tags: [0, 1, 2].
+15.11.2024 22:37:11.437 Peer 3 is doing election. Tags: [0, 1, 2, 3].
+15.11.2024 22:37:11.437 Election done. New coordinator is peer 3.
+15.11.2024 22:37:11.438 Peer 0 sets coordinator to 3.
+15.11.2024 22:37:11.439 Peer 1 sets coordinator to 3.
+15.11.2024 22:37:11.439 Peer 2 sets coordinator to 3.
+15.11.2024 22:37:11.439 Peer 3 sets coordinator to 3.
+15.11.2024 22:37:12.443 Peer 0 is doing election. Tags: [0].
+15.11.2024 22:37:12.446 Peer 1 is doing election. Tags: [0, 1].
+15.11.2024 22:37:12.448 Peer 2 is doing election. Tags: [2].
+15.11.2024 22:37:12.450 Peer 2 is doing election. Tags: [0, 1, 2].
+15.11.2024 22:37:12.450 Peer 3 is doing election. Tags: [2, 3].
+15.11.2024 22:37:12.451 Peer 3 is doing election. Tags: [0, 1, 2, 3].
+15.11.2024 22:37:12.451 Peer 0 is doing election. Tags: [2, 3, 0].
+15.11.2024 22:37:12.452 Election done. New coordinator is peer 3.
+15.11.2024 22:37:12.452 Peer 1 is doing election. Tags: [2, 3, 0, 1].
+15.11.2024 22:37:12.453 Peer 0 sets coordinator to 3.
+15.11.2024 22:37:12.453 Election done. New coordinator is peer 3.
+15.11.2024 22:37:12.453 Peer 1 sets coordinator to 3.
+15.11.2024 22:37:12.454 Peer 2 sets coordinator to 3.
+15.11.2024 22:37:12.454 Peer 2 sets coordinator to 3.
+15.11.2024 22:37:12.455 Peer 3 sets coordinator to 3.
+15.11.2024 22:37:12.455 Peer 3 sets coordinator to 3.
+15.11.2024 22:37:12.455 Peer 0 sets coordinator to 3.
+15.11.2024 22:37:12.456 Peer 1 sets coordinator to 3.

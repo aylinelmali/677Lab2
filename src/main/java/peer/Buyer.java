@@ -33,6 +33,7 @@ public class Buyer extends APeer {
         pickRandomProduct();
     }
 
+    // starts buyer
     @Override
     public void start() throws RemoteException {
         super.start();

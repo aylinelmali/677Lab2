@@ -33,6 +33,7 @@ public class Seller extends APeer {
         this.money = 0;
     }
 
+    // starts seller
     @Override
     public void start() throws RemoteException {
         super.start();
