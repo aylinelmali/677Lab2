@@ -16,17 +16,21 @@ import java.util.Map;
 
 public class TraderState {
 
+    // Allows trader to keep track of sellers and deposited items
     private final Map<Product, List<Integer>> sellerQueues;
 
     private TraderState(Map<Product, List<Integer>> sellerQueues) {
         this.sellerQueues = sellerQueues;
     }
 
+    // Checks if a specified amount of product is available
     public boolean productAvailable(Product product, int amount) {
         List<Integer> stock = this.sellerQueues.get(product);
         return stock != null && stock.size() >= amount;
     }
 
+    // Removes specified amount of product from stock and returns list of
+    // seller IDs corresponding to these units
     public List<Integer> takeOutOfStock(Product product, int amount) {
         if (!productAvailable(product, amount)) {
             return List.of();
@@ -45,6 +49,7 @@ public class TraderState {
         return first;
     }
 
+    // Adds specified amount of product to queue for a given seller
     public void putIntoStock(Product product, int amount, int sellerID) {
         List<Integer> queue = sellerQueues.computeIfAbsent(product, k -> new ArrayList<>());
 
@@ -57,6 +62,7 @@ public class TraderState {
 
     public static final Path FILE_PATH = Paths.get("trader_state.txt");
 
+    // Writes current TraderState to text file
     public static synchronized void writeTraderState(TraderState traderState) {
         StringBuilder sb = new StringBuilder();
         for (Product product : traderState.sellerQueues.keySet()) {
@@ -69,6 +75,7 @@ public class TraderState {
         createFile(sb.toString());
     }
 
+    // Reads saved state from text file
     public static synchronized TraderState readTraderState() {
         String text = readFile();
 
@@ -97,6 +104,7 @@ public class TraderState {
         return new TraderState(sellerQueues);
     }
 
+    // Clears contents of text file to reset the marketplace state
     public static void resetTraderState() {
         try {
             BufferedWriter writer = Files.newBufferedWriter(TraderState.FILE_PATH, StandardCharsets.UTF_8);
@@ -105,6 +113,7 @@ public class TraderState {
         } catch (IOException ignored) {}
     }
 
+    // Converts list of seller IDs to a comma separated string for writing
     private static String listToString(List<Integer> list) {
         StringBuilder sb = new StringBuilder();
         for (int j : list) {
@@ -113,6 +122,7 @@ public class TraderState {
         return sb.toString();
     }
 
+    // Writes a string to text file to save trader's current state
     private static void createFile(String content) {
         try {
             BufferedWriter writer = Files.newBufferedWriter(TraderState.FILE_PATH, StandardCharsets.UTF_8);
@@ -121,6 +131,7 @@ public class TraderState {
         } catch (IOException ignored) {}
     }
 
+    // Reads the contexts of text file into string
     private static String readFile() {
 
         StringBuilder text = new StringBuilder();
