@@ -2,6 +2,14 @@ plugins {
     id("java")
 }
 
+tasks.jar {
+    manifest {
+        attributes(
+            "Main-Class" to "AsterixAndTheTradingPost"
+        )
+    }
+}
+
 group = "com.example"
 version = "1.0-SNAPSHOT"
 
