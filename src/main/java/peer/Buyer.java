@@ -89,6 +89,7 @@ public class Buyer extends APeer {
                 this.timestamp = VectorClock.merge(this.timestamp, traderTimestamp);
             }
             // Check if product was bought successfully and if so, pick new product
+            // else, try to buy the same product the next time.
             if (this.product == product && bought) {
                 pickRandomProduct();
             }
