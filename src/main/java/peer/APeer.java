@@ -49,8 +49,8 @@ public abstract class APeer extends UnicastRemoteObject implements IPeer {
     @Override
     public void start() throws RemoteException {
         if (this.peerID == peers.length-1 && crashIfCoordinator && peers.length > 3) { // This is the highest coordinator
-            int initialDelay = new Random().nextInt(10,21);
-            int period = new Random().nextInt(10,21);
+            int period = new Random().nextInt(10000,20001);
+
 
             // simulate periodic crash and recovery functionality
             ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
@@ -63,7 +63,7 @@ public abstract class APeer extends UnicastRemoteObject implements IPeer {
                         throw new RuntimeException(e);
                     }
                 }
-            }, initialDelay, period, TimeUnit.SECONDS);
+            }, this.peers.length * 200L + period, period, TimeUnit.MILLISECONDS);
         }
 
         // get all other peers from the registry
@@ -175,7 +175,7 @@ public abstract class APeer extends UnicastRemoteObject implements IPeer {
                 }
 
                 // send acknowledgement
-                peers[buyerID].discoverAck(product, available, this.timestamp);
+                peers[buyerID].discoverAck(product, amount, available, this.timestamp);
             } catch (RemoteException e) {
                 throw new RuntimeException(e);
             }
@@ -184,7 +184,7 @@ public abstract class APeer extends UnicastRemoteObject implements IPeer {
 
     // buy the product from the trader
     @Override
-    public final void buy(Product product, int amount, int[] buyerTimestamp, int buyerID) throws RemoteException {
+    public final void buy(Product product, int amount, int[] buyerTimestamp, int buyerID, long timeInitiated) throws RemoteException {
         // simulate crash
         simulateCrash();
 
@@ -223,7 +223,7 @@ public abstract class APeer extends UnicastRemoteObject implements IPeer {
                     }
                 }
                 // send acknowledgement
-                peers[buyerID].buyAck(product, bought, this.timestamp);
+                peers[buyerID].buyAck(product, amount, bought, this.timestamp, timeInitiated);
             } catch (RemoteException e) {
                 throw new RuntimeException(e);
             }

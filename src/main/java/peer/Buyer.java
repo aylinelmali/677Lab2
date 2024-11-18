@@ -23,14 +23,20 @@ public class Buyer extends APeer {
         registry.rebind("" + peerID, new Buyer(peerID, peersAmt));
     }
 
-    public static final int PERIOD = 4;
+    public static final int PERIOD = 5000;
+    private static final int AVERAGE_AMOUNT = 100;
 
     private Product product;
     private int amount;
 
+    // for statistics
+    private final List<Long> receivingTimeDeltas;
+
     public Buyer(int peerID, int peersAmt) throws RemoteException {
         super(peerID, peersAmt);
         pickRandomProduct();
+
+        receivingTimeDeltas = new ArrayList<>();
     }
 
     // starts buyer
@@ -40,7 +46,7 @@ public class Buyer extends APeer {
         Logger.log("Peer " + peerID + " (Buyer)");
         ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
 
-        int initialDelay = new Random().nextInt(1,11);
+        int initialDelay = new Random().nextInt(1, PERIOD);
 
         executor.scheduleAtFixedRate(() -> {
             // only buy something if not coordinator
@@ -48,16 +54,16 @@ public class Buyer extends APeer {
                 return;
             }
             try {
-                initiateDiscovery();
+                initiateDiscovery(this.product, this.amount);
             } catch (RemoteException e) {
                 throw new RuntimeException(e);
             }
-        }, initialDelay, PERIOD, TimeUnit.SECONDS);
+        }, this.peers.length * 200L + initialDelay, PERIOD, TimeUnit.MILLISECONDS);
     }
 
     // Handles acknowledgement from coordinator about product availability
     @Override
-    public void discoverAck(Product product, boolean available, int[] traderTimestamp) throws RemoteException {
+    public void discoverAck(Product product, int amount, boolean available, int[] traderTimestamp) throws RemoteException {
         // add job to thread pool
         executorService.submit(() -> {
             try {
@@ -66,11 +72,10 @@ public class Buyer extends APeer {
                     this.timestamp[this.peerID] += 1;
                     this.timestamp = VectorClock.merge(this.timestamp, traderTimestamp);
                 }
-                // Check if product is available and if so, trigger buy request
+                // Check if product is available and if so, trigger buy request.
+                // Else, wait for next cycle
                 if (this.product == product && available) {
-                    initiateBuy();
-                } else {
-                    pickRandomProduct();
+                    initiateBuy(System.currentTimeMillis(), product, amount);
                 }
             } catch (RemoteException e) {
                 throw new RuntimeException(e);
@@ -80,17 +85,26 @@ public class Buyer extends APeer {
 
     // Handle acknowledgment of successful or failed purchase
     @Override
-    public void buyAck(Product product, boolean bought, int[] traderTimestamp) throws RemoteException {
+    public void buyAck(Product product, int amount, boolean bought, int[] traderTimestamp, long timeInitiated) throws RemoteException {
         // add job to thread pool
         executorService.submit(() -> {
             // check if ack is valid
+
+            if (VectorClock.isSmallerThan(this.timestamp, traderTimestamp)) {
+                receivingTimeDeltas.add(System.currentTimeMillis() - timeInitiated);
+                if (receivingTimeDeltas.size() >= AVERAGE_AMOUNT) {
+                    Logger.logStats(Messages.getStatisticsMessage(peerID, receivingTimeDeltas));
+                    receivingTimeDeltas.clear();
+                }
+            }
+
             synchronized(this) {
                 this.timestamp[this.peerID] += 1;
                 this.timestamp = VectorClock.merge(this.timestamp, traderTimestamp);
             }
             // Check if product was bought successfully and if so, pick new product
             // else, try to buy the same product the next time.
-            if (this.product == product && bought) {
+            if (this.product == product && this.amount == amount && bought) {
                 pickRandomProduct();
             }
         });
@@ -107,7 +121,7 @@ public class Buyer extends APeer {
     }
 
     // Initiate discovery request to coordinator
-    public void initiateDiscovery() throws RemoteException {
+    public void initiateDiscovery(Product product, int amount) throws RemoteException {
         // add job to thread pool
         executorService.submit(() -> {
             try {
@@ -116,22 +130,12 @@ public class Buyer extends APeer {
                 synchronized(this) {
                     this.timestamp[this.peerID] += 1;
                 }
-                this.peers[this.coordinatorID].discover(this.product, this.amount, this.timestamp, this.peerID);
+                this.peers[this.coordinatorID].discover(product, amount, this.timestamp, this.peerID);
             } catch (RemoteException e) {
                 try {
                     Logger.log(Messages.getPeerCouldNotConnectMessage(peerID, coordinatorID));
-
-                    // coordinator crashed, start election
-                    int oldCoordinatorID = this.coordinatorID;
+                    // coordinator crashed, start election and try buying next time
                     election(new int[] {});
-                    waitForCoordinatorChangeWithTimeout(oldCoordinatorID, 5000);
-
-                    // election done, retry.
-                    if (this.peerID != this.coordinatorID) { // if this peer is a coordinator, discard discovery.
-                        initiateDiscovery(); // retry discovery after election
-                    } else {
-                        Logger.log(Messages.getDiscardingLookupMessage(this.peerID));
-                    }
                 } catch (RemoteException f) {
                     throw new RuntimeException(f);
                 }
@@ -140,7 +144,7 @@ public class Buyer extends APeer {
     }
 
     // Initiate a purchase request to coordinator
-    public void initiateBuy() throws RemoteException {
+    public void initiateBuy(long timeInitiated, Product product, int amount) throws RemoteException {
         // add job to thread pool
         executorService.submit(() -> {
             try {
@@ -148,21 +152,12 @@ public class Buyer extends APeer {
                 synchronized (this) {
                     this.timestamp[this.peerID] += 1;
                 }
-                peers[coordinatorID].buy(this.product, this.amount, this.timestamp, this.peerID);
+                this.peers[coordinatorID].buy(product, amount, this.timestamp, this.peerID, timeInitiated);
             } catch (RemoteException e) {
                 try {
                     Logger.log(Messages.getPeerCouldNotConnectMessage(peerID, coordinatorID));
-                    // coordinator crashed, start election
-                    int oldCoordinatorID = this.coordinatorID;
+                    // coordinator crashed, start election and try buying next time
                     election(new int[] {});
-                    waitForCoordinatorChangeWithTimeout(oldCoordinatorID, 5000);
-
-                    // election done, retry.
-                    if (this.peerID != this.coordinatorID) { // if this peer is a coordinator, discard discovery.
-                        initiateBuy(); // retry buy after election
-                    } else {
-                        Logger.log(Messages.getDiscardingBuyMessage(this.peerID));
-                    }
                 } catch (RemoteException f) {
                     throw new RuntimeException(f);
                 }

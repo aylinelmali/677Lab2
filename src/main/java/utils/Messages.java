@@ -2,12 +2,17 @@ package utils;
 
 import product.Product;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * This class contains all the messages for the logging.
  */
 public class Messages {
+
+    private static List<Double> meanDeltas = new ArrayList<>();
+
     public static String getElectionDoneMessage(int coordinatorID) {
         return "Election done. New coordinator is peer " + coordinatorID + ".";
     }
@@ -70,5 +75,10 @@ public class Messages {
 
     public static String getDiscardingBuyMessage(int peerID) {
         return "Peer " + peerID + " is new coordinator. Discarding buy.";
+    }
+
+    public static String getStatisticsMessage(int peerID, List<Long> deltas) {
+        double delta = deltas.stream().mapToLong(Long::longValue).average().orElse(0);
+        return "Peer " + peerID + " has an average response time of " + delta + ". Deltas: " + deltas;
     }
 }

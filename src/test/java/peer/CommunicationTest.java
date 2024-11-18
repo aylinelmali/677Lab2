@@ -20,10 +20,10 @@ public class CommunicationTest {
         Seller seller = new Seller(0,2);
         APeer coordinator = new APeer(1, 2) {
             @Override
-            public void discoverAck(Product product, boolean available, int[] traderTimestamp) throws RemoteException {}
+            public void discoverAck(Product product, int amount, boolean available, int[] traderTimestamp) throws RemoteException {}
 
             @Override
-            public void buyAck(Product product, boolean bought, int[] traderTimestamp) throws RemoteException {}
+            public void buyAck(Product product, int amount, boolean bought, int[] traderTimestamp, long timeInitiated) throws RemoteException {}
 
             @Override
             public void offerAck(int[] sellerTimestamp) throws RemoteException {}
@@ -62,10 +62,10 @@ public class CommunicationTest {
         Seller seller = new Seller(1,3);
         APeer coordinator = new APeer(2, 3) {
             @Override
-            public void discoverAck(Product product, boolean available, int[] traderTimestamp) throws RemoteException {}
+            public void discoverAck(Product product, int amount, boolean available, int[] traderTimestamp) throws RemoteException {}
 
             @Override
-            public void buyAck(Product product, boolean bought, int[] traderTimestamp) throws RemoteException {}
+            public void buyAck(Product product, int amount, boolean bought, int[] traderTimestamp, long timeInitiated) throws RemoteException {}
 
             @Override
             public void offerAck(int[] sellerTimestamp) throws RemoteException {}
@@ -91,7 +91,7 @@ public class CommunicationTest {
         buyer.pickProduct(Product.BOARS, 3);
         Thread.sleep(1000);
 
-        buyer.initiateDiscovery();
+        buyer.initiateDiscovery(Product.BOARS, 3);
         Thread.sleep(1000);
 
         TraderState traderState = TraderState.readTraderState();
@@ -110,10 +110,10 @@ public class CommunicationTest {
         Seller seller = new Seller(1,3);
         APeer coordinator = new APeer(2, 3) {
             @Override
-            public void discoverAck(Product product, boolean available, int[] traderTimestamp) throws RemoteException {}
+            public void discoverAck(Product product, int amount, boolean available, int[] traderTimestamp) throws RemoteException {}
 
             @Override
-            public void buyAck(Product product, boolean bought, int[] traderTimestamp) throws RemoteException {}
+            public void buyAck(Product product, int amount, boolean bought, int[] traderTimestamp, long timeInitiated) throws RemoteException {}
 
             @Override
             public void offerAck(int[] sellerTimestamp) throws RemoteException {}
@@ -140,7 +140,7 @@ public class CommunicationTest {
         buyer.pickProduct(Product.BOARS, 3);
         Thread.sleep(1000);
 
-        buyer.initiateBuy();
+        buyer.initiateBuy(0, Product.BOARS, 3);
         Thread.sleep(1000);
 
         TraderState traderState = TraderState.readTraderState();
@@ -158,10 +158,10 @@ public class CommunicationTest {
         Seller seller = new Seller(1,3);
         APeer coordinator = new APeer(2, 3) {
             @Override
-            public void discoverAck(Product product, boolean available, int[] traderTimestamp) throws RemoteException {}
+            public void discoverAck(Product product, int amount, boolean available, int[] traderTimestamp) throws RemoteException {}
 
             @Override
-            public void buyAck(Product product, boolean bought, int[] traderTimestamp) throws RemoteException {}
+            public void buyAck(Product product, int amount, boolean bought, int[] traderTimestamp, long timeInitiated) throws RemoteException {}
 
             @Override
             public void offerAck(int[] sellerTimestamp) throws RemoteException {}
@@ -188,7 +188,7 @@ public class CommunicationTest {
         buyer.pickProduct(Product.BOARS, 6);
         Thread.sleep(100);
 
-        buyer.initiateDiscovery();
+        buyer.initiateDiscovery(Product.BOARS, 6);
         Thread.sleep(100);
 
         TraderState traderState = TraderState.readTraderState();
@@ -203,7 +203,7 @@ public class CommunicationTest {
         buyer.pickProduct(Product.BOARS, 6);
         Thread.sleep(100);
 
-        buyer.initiateBuy();
+        buyer.initiateBuy(0, Product.BOARS, 6);
         Thread.sleep(100);
 
         Assertions.assertFalse(traderState.productAvailable(Product.BOARS, 6));

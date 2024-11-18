@@ -23,7 +23,7 @@ public class Seller extends APeer {
         registry.rebind("" + peerID, new Seller(peerID, peersAmt));
     }
 
-    public static final int PERIOD = 4;
+    public static final int PERIOD = 5000;
 
     // Amount of money earned through sales
     public int money;
@@ -40,7 +40,7 @@ public class Seller extends APeer {
         Logger.log("Peer " + peerID + " (Seller)");
         ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
 
-        int initialDelay = new Random().nextInt(1,11);
+        int initialDelay = new Random().nextInt(1, PERIOD);
 
         executor.scheduleAtFixedRate(() -> {
             // only sell something if not coordinator
@@ -54,16 +54,16 @@ public class Seller extends APeer {
             } catch (RemoteException e) {
                 throw new RuntimeException(e);
             }
-        }, initialDelay, PERIOD, TimeUnit.SECONDS);
+        }, this.peers.length * 200L + initialDelay, PERIOD, TimeUnit.MILLISECONDS);
     }
 
     @Override
-    public void discoverAck(Product product, boolean available, int[] traderTimestamp) throws RemoteException {
+    public void discoverAck(Product product, int amount, boolean available, int[] traderTimestamp) throws RemoteException {
         // Do nothing. This peer is not a buyer!
     }
 
     @Override
-    public void buyAck(Product product, boolean bought, int[] traderTimestamp) throws RemoteException {
+    public void buyAck(Product product, int amount, boolean bought, int[] traderTimestamp, long timeInitiated) throws RemoteException {
         // Do nothing. This peer is not a buyer!
     }
 

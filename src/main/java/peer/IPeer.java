@@ -46,10 +46,11 @@ public interface IPeer extends Remote {
     /**
      * Acknowledges the discover message.
      * @param product Discovered product.
+     * @param amount Amount discovered.
      * @param available Product available.
      * @param traderTimestamp Timestamp of trader.
      */
-    void discoverAck(Product product, boolean available, int[] traderTimestamp) throws RemoteException;
+    void discoverAck(Product product, int amount, boolean available, int[] traderTimestamp) throws RemoteException;
 
     /**
      * Sends a buy message to the trader.
@@ -57,16 +58,19 @@ public interface IPeer extends Remote {
      * @param amount Amount of products to buy.
      * @param buyerTimestamp Timestamp of the buyer.
      * @param buyerID ID of the buyer who initiated the buy.
+     * @param timeInitiated Time when buy was initiated. Used for statistics.
      */
-    void buy(Product product, int amount, int[] buyerTimestamp, int buyerID) throws RemoteException;
+    void buy(Product product, int amount, int[] buyerTimestamp, int buyerID, long timeInitiated) throws RemoteException;
 
     /**
      * Acknowledges the buy message.
      * @param product The bought product.
+     * @param amount The amount of product bought.
      * @param bought Indicates if the products were successfully bought.
      * @param traderTimestamp Timestamp of the trader.
+     * @param timeInitiated Time when buy was initiated. Used for statistics.
      */
-    void buyAck(Product product, boolean bought, int[] traderTimestamp) throws RemoteException;
+    void buyAck(Product product, int amount, boolean bought, int[] traderTimestamp, long timeInitiated) throws RemoteException;
 
     /**
      * Sends an offer message to the trader.
