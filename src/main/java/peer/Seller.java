@@ -40,7 +40,9 @@ public class Seller extends APeer {
         Logger.log("Peer " + peerID + " (Seller)");
         ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
 
-        int initialDelay = new Random().nextInt(1, PERIOD);
+        int initialDelay = new Random().nextInt(0, PERIOD);
+        int delay = new Random().nextInt(PERIOD/2, PERIOD);
+
 
         executor.scheduleAtFixedRate(() -> {
             // only sell something if not coordinator
@@ -54,7 +56,7 @@ public class Seller extends APeer {
             } catch (RemoteException e) {
                 throw new RuntimeException(e);
             }
-        }, this.peers.length * 200L + initialDelay, PERIOD, TimeUnit.MILLISECONDS);
+        }, this.peers.length * 200L + initialDelay, delay, TimeUnit.MILLISECONDS);
     }
 
     @Override
@@ -105,8 +107,8 @@ public class Seller extends APeer {
                 synchronized (this) {
                     this.timestamp[this.peerID] += 1;
                 }
-                this.peers[this.coordinatorID].offer(product, amount, this.timestamp, this.peerID);
                 Logger.log(Messages.getOfferMessage(peerID, amount, product));
+                this.peers[this.coordinatorID].offer(product, amount, this.timestamp, this.peerID);
             } catch (RemoteException e) {
                 throw new RuntimeException(e);
             }

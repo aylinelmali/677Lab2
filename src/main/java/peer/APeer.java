@@ -18,7 +18,8 @@ import java.util.concurrent.*;
 
 public abstract class APeer extends UnicastRemoteObject implements IPeer {
 
-    public static int REGISTRY_ID = 1099;
+    public static final int REGISTRY_ID = 1099;
+    public static final int CRASH_PERIOD = 10000;
 
     public final int peerID;
     public IPeer[] peers;
@@ -49,8 +50,7 @@ public abstract class APeer extends UnicastRemoteObject implements IPeer {
     @Override
     public void start() throws RemoteException {
         if (this.peerID == peers.length-1 && crashIfCoordinator && peers.length > 3) { // This is the highest coordinator
-            int period = new Random().nextInt(10000,20001);
-
+            int period = new Random().nextInt(CRASH_PERIOD/2, CRASH_PERIOD);
 
             // simulate periodic crash and recovery functionality
             ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);

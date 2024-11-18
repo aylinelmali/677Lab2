@@ -46,7 +46,8 @@ public class Buyer extends APeer {
         Logger.log("Peer " + peerID + " (Buyer)");
         ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
 
-        int initialDelay = new Random().nextInt(1, PERIOD);
+        int initialDelay = new Random().nextInt(0, PERIOD);
+        int delay = new Random().nextInt(PERIOD/2, PERIOD);
 
         executor.scheduleAtFixedRate(() -> {
             // only buy something if not coordinator
@@ -58,7 +59,7 @@ public class Buyer extends APeer {
             } catch (RemoteException e) {
                 throw new RuntimeException(e);
             }
-        }, this.peers.length * 200L + initialDelay, PERIOD, TimeUnit.MILLISECONDS);
+        }, this.peers.length * 200L + initialDelay, delay, TimeUnit.MILLISECONDS);
     }
 
     // Handles acknowledgement from coordinator about product availability
@@ -88,14 +89,10 @@ public class Buyer extends APeer {
     public void buyAck(Product product, int amount, boolean bought, int[] traderTimestamp, long timeInitiated) throws RemoteException {
         // add job to thread pool
         executorService.submit(() -> {
-            // check if ack is valid
-
-            if (VectorClock.isSmallerThan(this.timestamp, traderTimestamp)) {
-                receivingTimeDeltas.add(System.currentTimeMillis() - timeInitiated);
-                if (receivingTimeDeltas.size() >= AVERAGE_AMOUNT) {
-                    Logger.logStats(Messages.getStatisticsMessage(peerID, receivingTimeDeltas));
-                    receivingTimeDeltas.clear();
-                }
+            receivingTimeDeltas.add(System.currentTimeMillis() - timeInitiated);
+            if (receivingTimeDeltas.size() >= AVERAGE_AMOUNT) {
+                Logger.logStats(Messages.getStatisticsMessage(peerID, receivingTimeDeltas));
+                receivingTimeDeltas.clear();
             }
 
             synchronized(this) {
